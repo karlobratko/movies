@@ -73,7 +73,7 @@ IF OBJECT_ID(N'MOVIES.dbo.Users', N'U') IS NULL BEGIN
   CREATE TABLE [dbo].[Users]
     ( [Id]         int              NOT NULL IDENTITY (1, 1)
     , [Guid]       uniqueidentifier NOT NULL 
-        CONSTRAINT [DF_User_Guid]        DEFAULT NEWSEQUENTIALID()
+        CONSTRAINT [DF_Users_Guid]       DEFAULT NEWSEQUENTIALID()
     , [CreateDate] datetime         NOT NULL
         CONSTRAINT [DF_Users_CreateDate] DEFAULT GETDATE()
     , [CreatedBy]  int              NOT NULL
@@ -90,12 +90,12 @@ IF OBJECT_ID(N'MOVIES.dbo.Users', N'U') IS NULL BEGIN
      
     , CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC)
     
-    , CONSTRAINT [FK_Users_CreatedBy] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_Users_UpdatedBy] FOREIGN KEY ([UpdatedBy]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_Users_DeletedBy] FOREIGN KEY ([DeletedBy]) REFERENCES [dbo].[Users] ([Id]) )
+    , CONSTRAINT [FK_Users_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[Users] ( [Id] )
+    , CONSTRAINT [FK_Users_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[Users] ( [Id] )
+    , CONSTRAINT [FK_Users_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[Users] ( [Id] ) )
 
-  CREATE UNIQUE NONCLUSTERED INDEX [IX_Users_Guid]     ON [dbo].[Users] ([Guid] ASC)
-  CREATE UNIQUE NONCLUSTERED INDEX [IX_Users_Username] ON [dbo].[Users] ([Username] ASC)
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Users_Guid]     ON [dbo].[Users] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Users_Username] ON [dbo].[Users] ( [Username] ASC )
 END
 GO
 
@@ -118,8 +118,12 @@ return_code = INTERNAL_ERROR (-1)
 CREATE OR ALTER PROCEDURE [dbo].[UserCreate] ( @Username     AS nvarchar(50)
                                              , @PasswordHash AS nvarchar(512)
                                              , @IsAdmin      AS bit
-                                             , @CreatedBy    AS int = 1 )
+                                             , @CreatedBy    AS int )
 AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
   DECLARE @Guid       AS uniqueidentifier
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -234,8 +238,12 @@ return_code = INTERNAL_ERROR (-1)
             | ALREADY_DELETED (3)
 ****************************************************/
 CREATE OR ALTER PROCEDURE [dbo].[UserDelete] ( @Guid      AS uniqueidentifier
-                                             , @DeletedBy AS int = 1 )
+                                             , @DeletedBy AS int )
 AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
   DECLARE @Id         AS int
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -376,8 +384,12 @@ CREATE OR ALTER PROCEDURE [dbo].[UserUpdate] ( @Guid         AS uniqueidentifier
                                              , @Username     AS nvarchar(50)
                                              , @PasswordHash AS nvarchar(512)
                                              , @IsAdmin      AS bit
-                                             , @UpdatedBy    AS int = 1 )
+                                             , @UpdatedBy    AS int )
 AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
   DECLARE @Id         AS int
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -447,8 +459,12 @@ return_code = INTERNAL_ERROR (-1)
 ****************************************************/
 CREATE OR ALTER PROCEDURE [dbo].[UserRegister] ( @Username  AS nvarchar(50)
                                                , @Password  AS nvarchar(512)
-                                               , @CreatedBy AS int = 1 )
+                                               , @CreatedBy AS int )
 AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
   DECLARE @Guid       AS uniqueidentifier
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -589,12 +605,12 @@ IF OBJECT_ID(N'MOVIES.dbo.Movies', N'U') IS NULL BEGIN
   CREATE TABLE [dbo].[Movies]
     ( [Id]         int              NOT NULL IDENTITY (1, 1)
     , [Guid]       uniqueidentifier NOT NULL 
-        CONSTRAINT [DF_User_Guid]        DEFAULT NEWSEQUENTIALID()
+        CONSTRAINT [DF_Movies_Guid]        DEFAULT NEWSEQUENTIALID()
     , [CreateDate] datetime         NOT NULL
-        CONSTRAINT [DF_Users_CreateDate] DEFAULT GETDATE()
+        CONSTRAINT [DF_Movies_CreateDate] DEFAULT GETDATE()
     , [CreatedBy]  int              NOT NULL
     , [UpdateDate] datetime         NOT NULL
-        CONSTRAINT [DF_Users_UpdateDate] DEFAULT GETDATE()
+        CONSTRAINT [DF_Movies_UpdateDate] DEFAULT GETDATE()
     , [UpdatedBy]  int              NOT NULL
     , [DeleteDate] datetime         NULL
     , [DeletedBy]  int              NULL
@@ -605,19 +621,20 @@ IF OBJECT_ID(N'MOVIES.dbo.Movies', N'U') IS NULL BEGIN
     , [ShowingDate]     datetime       NOT NULL
     , [DurationMinutes] int            NOT NULL
     , [Description]     nvarchar(2056) NULL
-    , [WebPath]         nvarchar(512)  NOT NULL
-    , [ImagePath]       nvarchar(512)  NOT NULL
+    , [WebPath]         nvarchar(512)  NULL
+    , [ImagePath]       nvarchar(512)  NULL
+    , [IsFavorite]      bit            NOT NULL
+        CONSTRAINT [DF_Movies_IsFavourite] DEFAULT 0
      
-    , CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [PK_Movies] PRIMARY KEY CLUSTERED ([Id] ASC)
     
-    , CONSTRAINT [FK_Users_CreatedBy] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_Users_UpdatedBy] FOREIGN KEY ([UpdatedBy]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_Users_DeletedBy] FOREIGN KEY ([DeletedBy]) REFERENCES [dbo].[Users] ([Id]) )
+    , CONSTRAINT [FK_Movies_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[Movies] ( [Id] )
+    , CONSTRAINT [FK_Movies_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[Movies] ( [Id] )
+    , CONSTRAINT [FK_Movies_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[Movies] ( [Id] ) )
 
-  CREATE UNIQUE NONCLUSTERED INDEX [IX_Movies_Guid] ON [dbo].[Movies] ([Guid] ASC)
-  CREATE UNIQUE NONCLUSTERED INDEX [IX_Movies_OriginalTitleAndPublishedDate] 
-    ON [dbo].[Movies] ( [OriginalTitle] ASC
-                      , [PublishedDate] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Movies_Guid]         ON [dbo].[Movies] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Movies_TitleAndDate] ON [dbo].[Movies] ( [OriginalTitle] ASC
+                                                                              , [PublishedDate] ASC )
 END
 GO
 
@@ -634,6 +651,7 @@ params = @Title
        , @Description
        , @WebPath
        , @ImagePath
+       , @IsFavorite
        , @CreatedBy (int identifier of CREATE initiator)
 
 return_value = if return_code != INTERNAL_ERROR MOVIE else ()
@@ -650,8 +668,13 @@ CREATE OR ALTER PROCEDURE [dbo].[MovieCreate] ( @Title           AS nvarchar(256
                                               , @Description     AS nvarchar(2056)
                                               , @WebPath         AS nvarchar(512) 
                                               , @ImagePath       AS nvarchar(512)
-                                              , @CreatedBy       AS int = 1 )
+                                              , @IsFavorite      AS bit
+                                              , @CreatedBy       AS int )
 AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
   DECLARE @Guid       AS uniqueidentifier
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -672,7 +695,8 @@ AS BEGIN
     , [DurationMinutes]
     , [Description]
     , [WebPath]
-    , [ImagePath] )
+    , [ImagePath]
+    , [IsFavorite] )
     VALUES
     ( @CreatedBy
     , @CreatedBy
@@ -683,7 +707,8 @@ AS BEGIN
     , @DurationMinutes
     , @Description
     , @WebPath
-    , @ImagePath )
+    , @ImagePath
+    , @IsFavorite )
 
     DECLARE @Id AS int = SCOPE_IDENTITY()
     SELECT ALL
@@ -703,6 +728,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [Id] = @Id
 
@@ -723,6 +749,7 @@ AS BEGIN
       , [Description]     = @Description
       , [WebPath]         = @WebPath
       , [ImagePath]       = @ImagePath
+      , [IsFavorite]      = @IsFavorite
     WHERE [Guid] = @Guid
 
     SELECT ALL
@@ -742,6 +769,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [Id] = @Id
 
@@ -771,6 +799,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [Id] = @Id
 
@@ -797,8 +826,12 @@ return_code = INTERNAL_ERROR (-1)
             | ALREADY_DELETED (3)
 ****************************************************/
 CREATE OR ALTER PROCEDURE [dbo].[MovieDelete] ( @Guid      AS uniqueidentifier
-                                              , @DeletedBy AS int = 1 )
+                                              , @DeletedBy AS int )
 AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
   DECLARE @Id         AS int
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -864,6 +897,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [Id] <> 1
   END
@@ -885,6 +919,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [DeleteDate] IS NULL
       AND [Id] <> 1
@@ -907,6 +942,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [Id] = @Id
       AND [Id] <> 1
@@ -929,6 +965,7 @@ AS BEGIN
       , [Description]
       , [WebPath]
       , [ImagePath]
+      , [IsFavorite]
     FROM [dbo].[Movies]
     WHERE [DeleteDate] IS NULL 
       AND [Id] = @Id
@@ -951,6 +988,7 @@ params = @Guid
        , @Description
        , @WebPath
        , @ImagePath
+       , @IsFavorite
        , @UpdatedBy (int identifier of UPDATE initiator)
 
 return_value = VOID
@@ -969,8 +1007,13 @@ CREATE OR ALTER PROCEDURE [dbo].[MovieUpdate] ( @Guid            AS uniqueidenti
                                               , @Description     AS nvarchar(2056)
                                               , @WebPath         AS nvarchar(512) 
                                               , @ImagePath       AS nvarchar(512)
-                                              , @UpdatedBy       AS int = 1 )
+                                              , @IsFavorite      AS bit
+                                              , @UpdatedBy       AS int )
 AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
   DECLARE @Id         AS int
   DECLARE @DeleteDate AS datetime
   SELECT ALL TOP 1
@@ -1018,6 +1061,1836 @@ AS BEGIN
     , [Description]     = @Description
     , [WebPath]         = @WebPath
     , [ImagePath]       = @ImagePath
+    , [IsFavorite]      = @IsFavorite
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[People]
+db_type = TABLE
+identifiable = 1
+manageable = 1
+
+bl_fields = FName :: nvarchar(64)
+          , LName :: nvarchar(64)
+****************************************************/
+IF OBJECT_ID(N'MOVIES.dbo.People', N'U') IS NULL BEGIN
+  CREATE TABLE [dbo].[People]
+    ( [Id]         int              NOT NULL IDENTITY (1, 1)
+    , [Guid]       uniqueidentifier NOT NULL 
+        CONSTRAINT [DF_People_Guid]       DEFAULT NEWSEQUENTIALID()
+    , [CreateDate] datetime         NOT NULL
+        CONSTRAINT [DF_People_CreateDate] DEFAULT GETDATE()
+    , [CreatedBy]  int              NOT NULL
+    , [UpdateDate] datetime         NOT NULL
+        CONSTRAINT [DF_People_UpdateDate] DEFAULT GETDATE()
+    , [UpdatedBy]  int              NOT NULL
+    , [DeleteDate] datetime         NULL
+    , [DeletedBy]  int              NULL
+    
+    , [FName] nvarchar(64) NOT NULL
+    , [LName] nvarchar(64) NOT NULL
+     
+    , CONSTRAINT [PK_People] PRIMARY KEY CLUSTERED ( [Id] ASC )
+    
+    , CONSTRAINT [FK_People_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[People] ( [Id] )
+    , CONSTRAINT [FK_People_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[People] ( [Id] )
+    , CONSTRAINT [FK_People_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[People] ( [Id] ) )
+
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_People_Guid]          ON [dbo].[People] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_People_FNameAndLName] ON [dbo].[People] ( [FName] ASC
+                                                                               , [LName] ASC )
+END
+GO
+
+/****************************************************
+name = [dbo].[PersonCreate]
+db_type = STORED PROCEDURE
+sp_type = CREATE
+
+params = @FName
+       , @LName
+       , @CreatedBy (int identifier of CREATE initiator)
+
+return_value = if return_code != INTERNAL_ERROR PERSON else ()
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | UNIQUE_VIOLATION (2)
+            | RECREATED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonCreate] ( @FName     AS nvarchar(64) 
+                                               , @LName     AS nvarchar(64) 
+                                               , @CreatedBy AS int )
+AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
+  DECLARE @Guid       AS uniqueidentifier
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[People]
+  WHERE [FName] = @FName
+    AND [LName] = @LName
+
+  IF @Guid IS NULL BEGIN
+    INSERT INTO [dbo].[People]
+    ( [CreatedBy]
+    , [UpdatedBy]
+    , [FName]
+    , [LName] )
+    VALUES
+    ( @CreatedBy
+    , @CreatedBy
+    , @FName
+    , @LName )
+
+    DECLARE @Id AS int = SCOPE_IDENTITY()
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [Id] = @Id
+
+    RETURN 1
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NOT NULL BEGIN
+    UPDATE [dbo].[People]
+    SET [DeleteDate] = NULL
+      , [DeletedBy]  = NULL
+      , [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+      , [FName]      = @FName
+      , [LName]      = @LName
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [Id] = @Id
+
+    RETURN 3
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NULL BEGIN
+    UPDATE [dbo].[People]
+    SET [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [Id] = @Id
+
+    RETURN 2
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[PersonDelete]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @Guid (uniqueidentifier of PERSON to DELETE)
+       , @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | ALREADY_DELETED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonDelete] ( @Guid      AS uniqueidentifier
+                                               , @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[People]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[People]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[PersonRead]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @Method = ALL (1)  
+                 | ALL_AVAILABLE (2)
+                 | ONE (3)
+                 | ONE_AVAILABLE (4)
+       , @Id (int identifier of PERSON case @Method ONE | ONE_AVAILABLE)
+
+return_value = () | PERSON | PERSON_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonRead] ( @Method AS int
+                                             , @Id     AS int = NULL )
+AS BEGIN
+  IF @Method = 1 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [Id] <> 1
+  END
+  ELSE IF @Method = 2 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [DeleteDate] IS NULL
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 3 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [Id] = @Id
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 4 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [FName]
+      , [LName]
+    FROM [dbo].[People]
+    WHERE [DeleteDate] IS NULL 
+      AND [Id] = @Id
+      AND [Id] <> 1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[PersonUpdate]
+db_type = STORED PROCEDURE
+sp_type = UPDATE
+
+params = @Guid
+       , @FName
+       , @LName
+       , @UpdatedBy (int identifier of UPDATE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | DELETED (3)
+            | UNIQUE_VIOLATION (4)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonUpdate] ( @Guid      AS uniqueidentifier
+                                               , @FName     AS nvarchar(64) 
+                                               , @LName     AS nvarchar(64)
+                                               , @UpdatedBy AS int )
+AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[People]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  SET @Id         = NULL
+  SET @DeleteDate = NULL
+
+ SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[People]
+  WHERE ( [FName] = @FName
+      AND [LName] = @LName )
+    AND [Guid] <> @Guid
+
+  IF  @Id IS NOT NULL 
+  AND @DeleteDate IS NULL BEGIN
+    RETURN 4
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[People]
+  SET [UpdatedBy]  = @UpdatedBy
+    , [UpdateDate] = GETDATE()
+    , [FName]      = @FName
+    , [LName]      = @LName
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[Directors]
+db_type = TABLE
+identifiable = 1
+manageable = 1
+
+bl_fields = MovieFK :: int
+          , PersonFK :: int
+****************************************************/
+IF OBJECT_ID(N'MOVIES.dbo.Directors', N'U') IS NULL BEGIN
+  CREATE TABLE [dbo].[Directors]
+    ( [Id]         int              NOT NULL IDENTITY (1, 1)
+    , [Guid]       uniqueidentifier NOT NULL 
+        CONSTRAINT [DF_Directors_Guid]       DEFAULT NEWSEQUENTIALID()
+    , [CreateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Directors_CreateDate] DEFAULT GETDATE()
+    , [CreatedBy]  int              NOT NULL
+    , [UpdateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Directors_UpdateDate] DEFAULT GETDATE()
+    , [UpdatedBy]  int              NOT NULL
+    , [DeleteDate] datetime         NULL
+    , [DeletedBy]  int              NULL
+    
+    , [MovieFK]  int NOT NULL
+    , [PersonFK] int NOT NULL
+     
+    , CONSTRAINT [PK_Directors] PRIMARY KEY CLUSTERED ( [Id] ASC )
+    
+    , CONSTRAINT [FK_Directors_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[Directors] ( [Id] )
+    , CONSTRAINT [FK_Directors_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[Directors] ( [Id] )
+    , CONSTRAINT [FK_Directors_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[Directors] ( [Id] )
+    
+    , CONSTRAINT [FK_Directors_Movies] FOREIGN KEY ([MovieFK])  REFERENCES [dbo].[Movies] ( [Id] )
+    , CONSTRAINT [FK_Directors_People] FOREIGN KEY ([PersonFK]) REFERENCES [dbo].[People] ( [Id] ) )
+
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Directors_Guid]           ON [dbo].[Directors] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Directors_MovieAndPerson] ON [dbo].[Directors] ( [MovieFK] ASC
+                                                                                      , [PersonFK] ASC )
+END
+GO
+
+/****************************************************
+name = [dbo].[DirectorCreate]
+db_type = STORED PROCEDURE
+sp_type = CREATE
+
+params = @MovieFK
+       , @PersonFK
+       , @CreatedBy (int identifier of CREATE initiator)
+
+return_value = if return_code != INTERNAL_ERROR DIRECTOR else ()
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | UNIQUE_VIOLATION (2)
+            | RECREATED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[DirectorCreate] ( @MovieFK   AS int 
+                                                 , @PersonFK  AS int 
+                                                 , @CreatedBy AS int )
+AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
+  DECLARE @Guid       AS uniqueidentifier
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Directors]
+  WHERE [MovieFK] = @MovieFK
+    AND [PersonFK] = @PersonFK
+
+  IF @Guid IS NULL BEGIN
+    INSERT INTO [dbo].[Directors]
+    ( [CreatedBy]
+    , [UpdatedBy]
+    , [MovieFK]
+    , [PersonFK] )
+    VALUES
+    ( @CreatedBy
+    , @CreatedBy
+    , @MovieFK
+    , @PersonFK )
+
+    DECLARE @Id AS int = SCOPE_IDENTITY()
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [Id] = @Id
+
+    RETURN 1
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NOT NULL BEGIN
+    UPDATE [dbo].[Directors]
+    SET [DeleteDate] = NULL
+      , [DeletedBy]  = NULL
+      , [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+      , [MovieFK]    = @MovieFK
+      , [PersonFK]   = @PersonFK
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [Id] = @Id
+
+    RETURN 3
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NULL BEGIN
+    UPDATE [dbo].[Directors]
+    SET [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [Id] = @Id
+
+    RETURN 2
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[DirectorDelete]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @Guid (uniqueidentifier of DIRECTOR to DELETE)
+       , @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | ALREADY_DELETED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[DirectorDelete] ( @Guid      AS uniqueidentifier
+                                                 , @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Directors]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Directors]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[DirectorRead]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @Method = ALL (1)  
+                 | ALL_AVAILABLE (2)
+                 | ONE (3)
+                 | ONE_AVAILABLE (4)
+       , @Id (int identifier of DIRECTOR case @Method ONE | ONE_AVAILABLE)
+
+return_value = () | DIRECTOR | DIRECTOR_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[DirectorRead] ( @Method AS int
+                                               , @Id     AS int = NULL )
+AS BEGIN
+  IF @Method = 1 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [Id] <> 1
+  END
+  ELSE IF @Method = 2 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [DeleteDate] IS NULL
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 3 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [Id] = @Id
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 4 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Directors]
+    WHERE [DeleteDate] IS NULL 
+      AND [Id] = @Id
+      AND [Id] <> 1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[DirectorUpdate]
+db_type = STORED PROCEDURE
+sp_type = UPDATE
+
+params = @Guid
+       , @MovieFK
+       , @PersonFK
+       , @UpdatedBy (int identifier of UPDATE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | DELETED (3)
+            | UNIQUE_VIOLATION (4)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[DirectorUpdate] ( @Guid      AS uniqueidentifier
+                                                 , @MovieFK   AS int
+                                                 , @PersonFK  AS int
+                                                 , @UpdatedBy AS int )
+AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Directors]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  SET @Id         = NULL
+  SET @DeleteDate = NULL
+
+ SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Directors]
+  WHERE ( [MovieFK]  = @MovieFK
+      AND [PersonFK] = @PersonFK )
+    AND [Guid] <> @Guid
+
+  IF  @Id IS NOT NULL 
+  AND @DeleteDate IS NULL BEGIN
+    RETURN 4
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Directors]
+  SET [UpdatedBy]  = @UpdatedBy
+    , [UpdateDate] = GETDATE()
+    , [MovieFK]    = @MovieFK
+    , [PersonFK]   = @PersonFK
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[Actors]
+db_type = TABLE
+identifiable = 1
+manageable = 1
+
+bl_fields = MovieFK :: int
+          , PersonFK :: int
+****************************************************/
+IF OBJECT_ID(N'MOVIES.dbo.Actors', N'U') IS NULL BEGIN
+  CREATE TABLE [dbo].[Actors]
+    ( [Id]         int              NOT NULL IDENTITY (1, 1)
+    , [Guid]       uniqueidentifier NOT NULL 
+        CONSTRAINT [DF_Actors_Guid]       DEFAULT NEWSEQUENTIALID()
+    , [CreateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Actors_CreateDate] DEFAULT GETDATE()
+    , [CreatedBy]  int              NOT NULL
+    , [UpdateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Actors_UpdateDate] DEFAULT GETDATE()
+    , [UpdatedBy]  int              NOT NULL
+    , [DeleteDate] datetime         NULL
+    , [DeletedBy]  int              NULL
+    
+    , [MovieFK]  int NOT NULL
+    , [PersonFK] int NOT NULL
+     
+    , CONSTRAINT [PK_Actors] PRIMARY KEY CLUSTERED ( [Id] ASC )
+    
+    , CONSTRAINT [FK_Actors_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[Actors] ( [Id] )
+    , CONSTRAINT [FK_Actors_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[Actors] ( [Id] )
+    , CONSTRAINT [FK_Actors_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[Actors] ( [Id] )
+    
+    , CONSTRAINT [FK_Actors_Movies] FOREIGN KEY ([MovieFK])  REFERENCES [dbo].[Movies] ( [Id] )
+    , CONSTRAINT [FK_Actors_People] FOREIGN KEY ([PersonFK]) REFERENCES [dbo].[People] ( [Id] ) )
+
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Actors_Guid]           ON [dbo].[Actors] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Actors_MovieAndPerson] ON [dbo].[Actors] ( [MovieFK] ASC
+                                                                                , [PersonFK] ASC )
+END
+GO
+
+/****************************************************
+name = [dbo].[ActorCreate]
+db_type = STORED PROCEDURE
+sp_type = CREATE
+
+params = @MovieFK
+       , @PersonFK
+       , @CreatedBy (int identifier of CREATE initiator)
+
+return_value = if return_code != INTERNAL_ERROR ACTOR else ()
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | UNIQUE_VIOLATION (2)
+            | RECREATED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[ActorCreate] ( @MovieFK   AS int 
+                                              , @PersonFK  AS int 
+                                              , @CreatedBy AS int )
+AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
+  DECLARE @Guid       AS uniqueidentifier
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Actors]
+  WHERE [MovieFK] = @MovieFK
+    AND [PersonFK] = @PersonFK
+
+  IF @Guid IS NULL BEGIN
+    INSERT INTO [dbo].[Actors]
+    ( [CreatedBy]
+    , [UpdatedBy]
+    , [MovieFK]
+    , [PersonFK] )
+    VALUES
+    ( @CreatedBy
+    , @CreatedBy
+    , @MovieFK
+    , @PersonFK )
+
+    DECLARE @Id AS int = SCOPE_IDENTITY()
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [Id] = @Id
+
+    RETURN 1
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NOT NULL BEGIN
+    UPDATE [dbo].[Actors]
+    SET [DeleteDate] = NULL
+      , [DeletedBy]  = NULL
+      , [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+      , [MovieFK]    = @MovieFK
+      , [PersonFK]   = @PersonFK
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [Id] = @Id
+
+    RETURN 3
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NULL BEGIN
+    UPDATE [dbo].[Actors]
+    SET [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [Id] = @Id
+
+    RETURN 2
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[ActorDelete]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @Guid (uniqueidentifier of ACTOR to DELETE)
+       , @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | ALREADY_DELETED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[ActorDelete] ( @Guid      AS uniqueidentifier
+                                              , @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Actors]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Actors]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[ActorRead]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @Method = ALL (1)  
+                 | ALL_AVAILABLE (2)
+                 | ONE (3)
+                 | ONE_AVAILABLE (4)
+       , @Id (int identifier of ACTOR case @Method ONE | ONE_AVAILABLE)
+
+return_value = () | ACTOR | ACTOR_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[ActorRead] ( @Method AS int
+                                            , @Id     AS int = NULL )
+AS BEGIN
+  IF @Method = 1 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [Id] <> 1
+  END
+  ELSE IF @Method = 2 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [DeleteDate] IS NULL
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 3 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [Id] = @Id
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 4 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [PersonFK]
+    FROM [dbo].[Actors]
+    WHERE [DeleteDate] IS NULL 
+      AND [Id] = @Id
+      AND [Id] <> 1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[ActorUpdate]
+db_type = STORED PROCEDURE
+sp_type = UPDATE
+
+params = @Guid
+       , @MovieFK
+       , @PersonFK
+       , @UpdatedBy (int identifier of UPDATE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | DELETED (3)
+            | UNIQUE_VIOLATION (4)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[ActorUpdate] ( @Guid      AS uniqueidentifier
+                                              , @MovieFK   AS int
+                                              , @PersonFK  AS int
+                                              , @UpdatedBy AS int )
+AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Actors]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  SET @Id         = NULL
+  SET @DeleteDate = NULL
+
+ SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Actors]
+  WHERE ( [MovieFK]  = @MovieFK
+      AND [PersonFK] = @PersonFK )
+    AND [Guid] <> @Guid
+
+  IF  @Id IS NOT NULL 
+  AND @DeleteDate IS NULL BEGIN
+    RETURN 4
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Actors]
+  SET [UpdatedBy]  = @UpdatedBy
+    , [UpdateDate] = GETDATE()
+    , [MovieFK]    = @MovieFK
+    , [PersonFK]   = @PersonFK
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[Genres]
+db_type = TABLE
+identifiable = 1
+manageable = 1
+
+bl_fields = Name :: nvarchar(128)
+****************************************************/
+IF OBJECT_ID(N'MOVIES.dbo.Genres', N'U') IS NULL BEGIN
+  CREATE TABLE [dbo].[Genres]
+    ( [Id]         int              NOT NULL IDENTITY (1, 1)
+    , [Guid]       uniqueidentifier NOT NULL 
+        CONSTRAINT [DF_Genres_Guid]       DEFAULT NEWSEQUENTIALID()
+    , [CreateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Genres_CreateDate] DEFAULT GETDATE()
+    , [CreatedBy]  int              NOT NULL
+    , [UpdateDate] datetime         NOT NULL
+        CONSTRAINT [DF_Genres_UpdateDate] DEFAULT GETDATE()
+    , [UpdatedBy]  int              NOT NULL
+    , [DeleteDate] datetime         NULL
+    , [DeletedBy]  int              NULL
+    
+    , [Name] nvarchar(128) NOT NULL
+     
+    , CONSTRAINT [PK_Genres] PRIMARY KEY CLUSTERED ( [Id] ASC )
+    
+    , CONSTRAINT [FK_Genres_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[Genres] ( [Id] )
+    , CONSTRAINT [FK_Genres_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[Genres] ( [Id] )
+    , CONSTRAINT [FK_Genres_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[Genres] ( [Id] ) )
+
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Genres_Guid] ON [dbo].[Genres] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_Genres_Name] ON [dbo].[Genres] ( [Name] ASC )
+END
+GO
+
+/****************************************************
+name = [dbo].[GenreCreate]
+db_type = STORED PROCEDURE
+sp_type = CREATE
+
+params = @Name
+       , @CreatedBy (int identifier of CREATE initiator)
+
+return_value = if return_code != INTERNAL_ERROR GENRE else ()
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | UNIQUE_VIOLATION (2)
+            | RECREATED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreCreate] ( @Name      AS nvarchar(128)
+                                              , @CreatedBy AS int )
+AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
+  DECLARE @Guid       AS uniqueidentifier
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Genres]
+  WHERE [Name] = @Name
+
+  IF @Guid IS NULL BEGIN
+    INSERT INTO [dbo].[Genres]
+    ( [CreatedBy]
+    , [UpdatedBy]
+    , [Name] )
+    VALUES
+    ( @CreatedBy
+    , @CreatedBy
+    , @Name )
+
+    DECLARE @Id AS int = SCOPE_IDENTITY()
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [Id] = @Id
+
+    RETURN 1
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NOT NULL BEGIN
+    UPDATE [dbo].[Genres]
+    SET [DeleteDate] = NULL
+      , [DeletedBy]  = NULL
+      , [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+      , [Name]      = @Name
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [Id] = @Id
+
+    RETURN 3
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NULL BEGIN
+    UPDATE [dbo].[Genres]
+    SET [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [Id] = @Id
+
+    RETURN 2
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[GenreDelete]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @Guid (uniqueidentifier of GENRE to DELETE)
+       , @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | ALREADY_DELETED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreDelete] ( @Guid      AS uniqueidentifier
+                                              , @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Genres]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Genres]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[GenreRead]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @Method = ALL (1)  
+                 | ALL_AVAILABLE (2)
+                 | ONE (3)
+                 | ONE_AVAILABLE (4)
+       , @Id (int identifier of GENRE case @Method ONE | ONE_AVAILABLE)
+
+return_value = () | GENRE | GENRE_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreRead] ( @Method AS int
+                                            , @Id     AS int = NULL )
+AS BEGIN
+  IF @Method = 1 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [Id] <> 1
+  END
+  ELSE IF @Method = 2 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [DeleteDate] IS NULL
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 3 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [Id] = @Id
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 4 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [Name]
+    FROM [dbo].[Genres]
+    WHERE [DeleteDate] IS NULL 
+      AND [Id] = @Id
+      AND [Id] <> 1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[GenreUpdate]
+db_type = STORED PROCEDURE
+sp_type = UPDATE
+
+params = @Guid
+       , @Name
+       , @UpdatedBy (int identifier of UPDATE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | DELETED (3)
+            | UNIQUE_VIOLATION (4)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreUpdate] ( @Guid      AS uniqueidentifier
+                                              , @Name      AS nvarchar(128)
+                                              , @UpdatedBy AS int )
+AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Genres]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  SET @Id         = NULL
+  SET @DeleteDate = NULL
+
+ SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[Genres]
+  WHERE [Name] = @Name
+    AND [Guid] <> @Guid
+
+  IF  @Id IS NOT NULL 
+  AND @DeleteDate IS NULL BEGIN
+    RETURN 4
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[Genres]
+  SET [UpdatedBy]  = @UpdatedBy
+    , [UpdateDate] = GETDATE()
+    , [Name]      = @Name
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[MoviesGenres]
+db_type = TABLE
+identifiable = 1
+manageable = 1
+
+bl_fields = MovieFK :: int
+          , GenreFK :: int
+****************************************************/
+IF OBJECT_ID(N'MOVIES.dbo.MoviesGenres', N'U') IS NULL BEGIN
+  CREATE TABLE [dbo].[MoviesGenres]
+    ( [Id]         int              NOT NULL IDENTITY (1, 1)
+    , [Guid]       uniqueidentifier NOT NULL 
+        CONSTRAINT [DF_MoviesGenres_Guid]       DEFAULT NEWSEQUENTIALID()
+    , [CreateDate] datetime         NOT NULL
+        CONSTRAINT [DF_MoviesGenres_CreateDate] DEFAULT GETDATE()
+    , [CreatedBy]  int              NOT NULL
+    , [UpdateDate] datetime         NOT NULL
+        CONSTRAINT [DF_MoviesGenres_UpdateDate] DEFAULT GETDATE()
+    , [UpdatedBy]  int              NOT NULL
+    , [DeleteDate] datetime         NULL
+    , [DeletedBy]  int              NULL
+    
+    , [MovieFK] int NOT NULL
+    , [GenreFK] int NOT NULL
+     
+    , CONSTRAINT [PK_MoviesGenres] PRIMARY KEY CLUSTERED ( [Id] ASC )
+    
+    , CONSTRAINT [FK_MoviesGenres_CreatedBy] FOREIGN KEY ( [CreatedBy] ) REFERENCES [dbo].[MoviesGenres] ( [Id] )
+    , CONSTRAINT [FK_MoviesGenres_UpdatedBy] FOREIGN KEY ( [UpdatedBy] ) REFERENCES [dbo].[MoviesGenres] ( [Id] )
+    , CONSTRAINT [FK_MoviesGenres_DeletedBy] FOREIGN KEY ( [DeletedBy] ) REFERENCES [dbo].[MoviesGenres] ( [Id] )
+    
+    , CONSTRAINT [FK_MoviesGenres_Movies] FOREIGN KEY ([MovieFK]) REFERENCES [dbo].[Movies] ( [Id] )
+    , CONSTRAINT [FK_MoviesGenres_People] FOREIGN KEY ([GenreFK]) REFERENCES [dbo].[People] ( [Id] ) )
+
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_MoviesGenres_Guid]          ON [dbo].[MoviesGenres] ( [Guid] ASC )
+  CREATE UNIQUE NONCLUSTERED INDEX [IX_MoviesGenres_MovieAndGenre] ON [dbo].[MoviesGenres] ( [MovieFK] ASC
+                                                                                           , [GenreFK] ASC )
+END
+GO
+
+/****************************************************
+name = [dbo].[MoviesGenreCreate]
+db_type = STORED PROCEDURE
+sp_type = CREATE
+
+params = @MovieFK
+       , @GenreFK
+       , @CreatedBy (int identifier of CREATE initiator)
+
+return_value = if return_code != INTERNAL_ERROR MOVIEGENRE else ()
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | UNIQUE_VIOLATION (2)
+            | RECREATED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MoviesGenreCreate] ( @MovieFK   AS int 
+                                                    , @GenreFK   AS int 
+                                                    , @CreatedBy AS int )
+AS BEGIN
+  IF @CreatedBy IS NULL BEGIN
+    SET @CreatedBy = 1
+  END
+
+  DECLARE @Guid       AS uniqueidentifier
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[MoviesGenres]
+  WHERE [MovieFK] = @MovieFK
+    AND [GenreFK] = @GenreFK
+
+  IF @Guid IS NULL BEGIN
+    INSERT INTO [dbo].[MoviesGenres]
+    ( [CreatedBy]
+    , [UpdatedBy]
+    , [MovieFK]
+    , [GenreFK] )
+    VALUES
+    ( @CreatedBy
+    , @CreatedBy
+    , @MovieFK
+    , @GenreFK )
+
+    DECLARE @Id AS int = SCOPE_IDENTITY()
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [Id] = @Id
+
+    RETURN 1
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NOT NULL BEGIN
+    UPDATE [dbo].[MoviesGenres]
+    SET [DeleteDate] = NULL
+      , [DeletedBy]  = NULL
+      , [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+      , [MovieFK]    = @MovieFK
+      , [GenreFK]    = @GenreFK
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [Id] = @Id
+
+    RETURN 3
+  END
+  ELSE IF @Guid       IS NOT NULL
+      AND @DeleteDate IS NULL BEGIN
+    UPDATE [dbo].[MoviesGenres]
+    SET [UpdateDate] = GETDATE()
+      , [UpdatedBy]  = @CreatedBy
+    WHERE [Guid] = @Guid
+
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [Id] = @Id
+
+    RETURN 2
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[MoviesGenresDelete]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @Guid (uniqueidentifier of MOVIEGENRE to DELETE)
+       , @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | ALREADY_DELETED (3)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MoviesGenresDelete] ( @Guid      AS uniqueidentifier
+                                                     , @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[MoviesGenress]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[MoviesGenress]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [Guid] = @Guid
+
+  IF @@ROWCOUNT = 1 BEGIN
+    RETURN 1
+  END
+  ELSE BEGIN
+    RETURN -1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[MovieGenreRead]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @Method = ALL (1)  
+                 | ALL_AVAILABLE (2)
+                 | ONE (3)
+                 | ONE_AVAILABLE (4)
+       , @Id (int identifier of MOVIEGENRE case @Method ONE | ONE_AVAILABLE)
+
+return_value = () | MOVIEGENRE | MOVIEGENRE_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MovieGenreRead] ( @Method AS int
+                                                 , @Id     AS int = NULL )
+AS BEGIN
+  IF @Method = 1 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [Id] <> 1
+  END
+  ELSE IF @Method = 2 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [DeleteDate] IS NULL
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 3 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [Id] = @Id
+      AND [Id] <> 1
+  END
+  ELSE IF @Method = 4 BEGIN
+    SELECT ALL
+        [Id]
+      , [Guid]
+      , [CreateDate]
+      , [CreatedBy]
+      , [UpdateDate]
+      , [UpdatedBy]
+      , [DeleteDate]
+      , [DeletedBy]
+      , [MovieFK]
+      , [GenreFK]
+    FROM [dbo].[MoviesGenres]
+    WHERE [DeleteDate] IS NULL 
+      AND [Id] = @Id
+      AND [Id] <> 1
+  END
+END
+GO
+
+/****************************************************
+name = [dbo].[MoviesGenreUpdate]
+db_type = STORED PROCEDURE
+sp_type = UPDATE
+
+params = @Guid
+       , @MovieFK
+       , @GenreFK
+       , @UpdatedBy (int identifier of UPDATE initiator)
+
+return_value = VOID
+return_code = INTERNAL_ERROR (-1)  
+            | SUCCESS (1)
+            | NOT_EXISTS (2)
+            | DELETED (3)
+            | UNIQUE_VIOLATION (4)
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MoviesGenreUpdate] ( @Guid      AS uniqueidentifier
+                                                    , @MovieFK   AS int
+                                                    , @GenreFK   AS int
+                                                    , @UpdatedBy AS int )
+AS BEGIN
+  IF @UpdatedBy IS NULL BEGIN
+    SET @UpdatedBy = 1
+  END
+
+  DECLARE @Id         AS int
+  DECLARE @DeleteDate AS datetime
+  SELECT ALL TOP 1
+      @Id         = [Id]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[MoviesGenres]
+  WHERE [Guid] = @Guid
+
+  IF @Id IS NULL BEGIN
+    RETURN 2
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  SET @Id         = NULL
+  SET @DeleteDate = NULL
+
+ SELECT ALL TOP 1
+      @Guid       = [Guid]
+    , @DeleteDate = [DeleteDate]
+  FROM [dbo].[MoviesGenres]
+  WHERE ( [MovieFK] = @MovieFK
+      AND [GenreFK] = @GenreFK )
+    AND [Guid] <> @Guid
+
+  IF  @Id IS NOT NULL 
+  AND @DeleteDate IS NULL BEGIN
+    RETURN 4
+  END
+  ELSE IF @Id IS NOT NULL 
+      AND @DeleteDate IS NOT NULL BEGIN
+    RETURN 3
+  END
+
+  UPDATE [dbo].[MoviesGenres]
+  SET [UpdatedBy]  = @UpdatedBy
+    , [UpdateDate] = GETDATE()
+    , [MovieFK]    = @MovieFK
+    , [GenreFK]    = @GenreFK
   WHERE [Guid] = @Guid
 
   IF @@ROWCOUNT = 1 BEGIN
