@@ -26,4 +26,16 @@ public interface Manageable<TKey> {
 
   Optional<TKey> getDeletedBy();
 
+  void setCreateDate(final Date createDate);
+
+  void setCreatedBy(final TKey createdBy);
+
+  void setUpdateDate(final Date updateDate);
+
+  void setUpdatedBy(final TKey updatedBy);
+
+  void setDeleteDate(final Date deleteDate);
+
+  void setDeletedBy(final TKey deletedBy);
+
 }

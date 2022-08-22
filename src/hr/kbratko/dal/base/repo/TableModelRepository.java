@@ -22,19 +22,21 @@ import java.util.UUID;
 public interface TableModelRepository<TKey, TModel extends TableModel<TKey>>
   extends IdentifiableRepository<TKey, TModel> {
 
-  StatusResult<CreateStatus, TModel> create(TModel model, Optional<TKey> createdBy)
+  StatusResult<CreateStatus, TModel> create(final TModel model,
+                                            final Optional<TKey> createdBy)
     throws Exception;
 
   Collection<TModel> readAllAvailable()
     throws Exception;
 
-  TModel readByIdAvailable(TKey id)
+  TModel readByIdAvailable(final TKey id)
     throws Exception;
 
-  UpdateStatus update(UUID guid, TModel model, Optional<TKey> updatedBy)
+  UpdateStatus update(final UUID guid, final TModel model,
+                      final Optional<TKey> updatedBy)
     throws Exception;
 
-  DeleteStatus delete(UUID guid, Optional<TKey> deletedBy)
+  DeleteStatus delete(final UUID guid, final Optional<TKey> deletedBy)
     throws Exception;
 
 }

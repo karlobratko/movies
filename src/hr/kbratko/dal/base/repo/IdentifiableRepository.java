@@ -18,13 +18,13 @@ import java.util.UUID;
 public interface IdentifiableRepository<TKey, TModel extends Identifiable<TKey>>
   extends ReadWriteRepository<TModel> {
 
-  TModel readById(TKey id)
+  TModel readById(final TKey id)
     throws Exception;
 
-  UpdateStatus update(UUID guid, TModel model)
+  UpdateStatus update(final UUID guid, final TModel model)
     throws Exception;
 
-  DeleteStatus delete(UUID guid)
+  DeleteStatus delete(final UUID guid)
     throws Exception;
 
 }
