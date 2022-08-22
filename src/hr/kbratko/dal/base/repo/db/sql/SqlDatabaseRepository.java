@@ -61,7 +61,8 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
   protected abstract TModel partiallyModel(final ResultSet resultSet)
     throws Exception;
 
-  protected abstract void parameterize(final CallableStatement statement, final TModel model)
+  protected abstract void parameterize(final CallableStatement statement,
+                                       final TModel model)
     throws Exception;
 
   private String getCreateProcedureSignature() {
@@ -92,11 +93,11 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
     throws Exception {
     TModel model = partiallyModel(resultSet);
 
-    TKey tmpDeletedBy = (TKey) resultSet.getObject(DELETED_BY);
-    TKey deletedBy = resultSet.wasNull() ? null : tmpDeletedBy;
+    TKey deletedBy = (TKey) resultSet.getObject(DELETED_BY);
+    deletedBy = resultSet.wasNull() ? null : deletedBy;
 
-    Date tmpDeleteDate = resultSet.getTimestamp(DELETE_DATE);
-    Date deleteDate = resultSet.wasNull() ? null : tmpDeleteDate;
+    Date deleteDate = resultSet.getTimestamp(DELETE_DATE);
+    deleteDate = resultSet.wasNull() ? null : deleteDate;
 
     model.setId((TKey) resultSet.getObject(ID));
     model.setGuid(UUID.fromString(resultSet.getString(GUID)));

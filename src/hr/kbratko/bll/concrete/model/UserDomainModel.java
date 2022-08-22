@@ -5,7 +5,6 @@
 package hr.kbratko.bll.concrete.model;
 
 import hr.kbratko.bll.base.model.BaseDomainModel;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -26,21 +25,21 @@ public final class UserDomainModel
                          UUID guid,
                          boolean isAvailable) {
     super(id, guid, isAvailable);
-    this._username = Objects.requireNonNull(username);
+    this._username = username;
     this._password = password;
     this._isAdmin = isAdmin;
   }
 
   public String getUsername() {
-    return _username;
+    return this._username;
   }
 
   public String getPassword() {
-    return _password;
+    return this._password;
   }
 
   public boolean isAdmin() {
-    return _isAdmin;
+    return this._isAdmin;
   }
 
   @Override
@@ -53,9 +52,7 @@ public final class UserDomainModel
 
     var user = (UserDomainModel) obj;
 
-    return (user._username == null
-            ? this._username == null
-            : user._username.equals(this._username));
+    return user._username.equals(this._username);
   }
 
   @Override
