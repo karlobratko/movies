@@ -10,9 +10,6 @@ import hr.kbratko.bll.concrete.model.UserDomainModel;
 import hr.kbratko.lib.ui.Borders;
 import hr.kbratko.lib.ui.Messages;
 import hr.kbratko.ui.MainView;
-import static hr.kbratko.ui.MainView.ADMIN_VIEW;
-import static hr.kbratko.ui.MainView.USER_VIEW;
-import java.awt.CardLayout;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -141,6 +138,8 @@ public class LoginView
   }// </editor-fold>//GEN-END:initComponents
 
   private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
+    this.defaultValidationFieldBorders();
+    this.cleanValidationFields();
     this.getCardContainer().showPanel(MainView.REGISTRATION_VIEW);
   }//GEN-LAST:event_btnRegisterActionPerformed
 
@@ -154,11 +153,13 @@ public class LoginView
                                                   .getPassword()).trim());
 
       if (Objects.isNull(user)) {
+        this.tfPassword.setText("");
         Messages.showErrorMessage("User does not exist",
                                   "Please insert valid username and password or register to use application.");
         return;
       }
 
+      this.cleanValidationFields();
       String cardIdentifier = user.isAdmin()
                                 ? MainView.ADMIN_VIEW
                                 : MainView.USER_VIEW;
@@ -169,6 +170,7 @@ public class LoginView
       this.getCardContainer().showPanel(cardIdentifier);
     }
     catch (Exception ex) {
+      this.cleanValidationFields();
       Messages.showErrorMessage("Error occured", ex.getMessage());
       Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -188,22 +190,25 @@ public class LoginView
   private boolean isFormValid() {
     boolean ok = true;
 
-    try {
-      for (JTextField field : this._validationFields) {
-        String text = field.getText().trim();
-        ok &= !text.isEmpty();
+    for (JTextField field : this._validationFields) {
+      String text = field.getText().trim();
+      ok &= !text.isEmpty();
 
-        if (text.isEmpty())
-          Borders.setBorderError(field);
-        else
-          Borders.setBorderDefault(field);
-      }
-    }
-    catch (Exception ex) {
-      Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+      if (text.isEmpty())
+        Borders.setBorderError(field);
+      else
+        Borders.setBorderDefault(field);
     }
 
     return ok;
+  }
+
+  private void cleanValidationFields() {
+    this._validationFields.forEach(field -> field.setText(""));
+  }
+
+  private void defaultValidationFieldBorders() {
+    this._validationFields.forEach(field -> Borders.setBorderDefault(field));
   }
 
 }
