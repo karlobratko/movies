@@ -4,7 +4,7 @@
  */
 package hr.kbratko.dal.base.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,9 +22,9 @@ public abstract class BaseTableModel<TKey>
   protected TKey _updatedBy;
   protected Optional<TKey> _deletedBy;
 
-  protected Date _createDate;
-  protected Date _updateDate;
-  protected Optional<Date> _deleteDate;
+  protected LocalDateTime _createDate;
+  protected LocalDateTime _updateDate;
+  protected Optional<LocalDateTime> _deleteDate;
 
   public BaseTableModel() {
   }
@@ -34,9 +34,9 @@ public abstract class BaseTableModel<TKey>
                         TKey createdBy,
                         TKey updatedBy,
                         TKey deletedBy,
-                        Date createDate,
-                        Date updateDate,
-                        Date deleteDate) {
+                        LocalDateTime createDate,
+                        LocalDateTime updateDate,
+                        LocalDateTime deleteDate) {
     this._id = id;
     this._guid = guid;
     this._createdBy = createdBy;
@@ -58,7 +58,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public Date getCreateDate() {
+  public LocalDateTime getCreateDate() {
     return this._createDate;
   }
 
@@ -68,7 +68,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public Date getUpdateDate() {
+  public LocalDateTime getUpdateDate() {
     return this._updateDate;
   }
 
@@ -78,7 +78,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public Optional<Date> getDeleteDate() {
+  public Optional<LocalDateTime> getDeleteDate() {
     return this._deleteDate;
   }
 
@@ -98,7 +98,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public void setCreateDate(final Date createDate) {
+  public void setCreateDate(final LocalDateTime createDate) {
     this._createDate = createDate;
   }
 
@@ -108,7 +108,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public void setUpdateDate(final Date updateDate) {
+  public void setUpdateDate(final LocalDateTime updateDate) {
     this._updateDate = updateDate;
   }
 
@@ -118,7 +118,7 @@ public abstract class BaseTableModel<TKey>
   }
 
   @Override
-  public void setDeleteDate(final Date deleteDate) {
+  public void setDeleteDate(final LocalDateTime deleteDate) {
     this._deleteDate = Optional.ofNullable(deleteDate);
   }
 

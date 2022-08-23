@@ -5,7 +5,7 @@
 package hr.kbratko.dal.concrete.model;
 
 import hr.kbratko.dal.base.model.BaseTableModel;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,8 +18,7 @@ public final class MovieTableModel
 
   private final String _title;
   private final String _originalTitle;
-  private final Date _publishedDate;
-  private final Date _showingDate;
+  private final LocalDateTime _publishedDate;
   private final int _durationMinutes;
   private final Optional<String> _description;
   private final Optional<String> _webPath;
@@ -28,8 +27,7 @@ public final class MovieTableModel
 
   public MovieTableModel(String title,
                          String originalTitle,
-                         Date publishedDate,
-                         Date showingDate,
+                         LocalDateTime publishedDate,
                          int durationMinutes,
                          String description,
                          String webPath,
@@ -39,7 +37,6 @@ public final class MovieTableModel
     this._title = title;
     this._originalTitle = originalTitle;
     this._publishedDate = publishedDate;
-    this._showingDate = showingDate;
     this._durationMinutes = durationMinutes;
     this._description = Optional.ofNullable(description);
     this._webPath = Optional.ofNullable(webPath);
@@ -49,8 +46,7 @@ public final class MovieTableModel
 
   public MovieTableModel(String title,
                          String originalTitle,
-                         Date publishedDate,
-                         Date showingDate,
+                         LocalDateTime publishedDate,
                          int durationMinutes,
                          String description,
                          String webPath,
@@ -61,9 +57,9 @@ public final class MovieTableModel
                          Integer createdBy,
                          Integer updatedBy,
                          Integer deletedBy,
-                         Date createDate,
-                         Date updateDate,
-                         Date deleteDate) {
+                         LocalDateTime createDate,
+                         LocalDateTime updateDate,
+                         LocalDateTime deleteDate) {
     super(id,
           guid,
           createdBy,
@@ -75,7 +71,6 @@ public final class MovieTableModel
     this._title = title;
     this._originalTitle = originalTitle;
     this._publishedDate = publishedDate;
-    this._showingDate = showingDate;
     this._durationMinutes = durationMinutes;
     this._description = Optional.ofNullable(description);
     this._webPath = Optional.ofNullable(webPath);
@@ -91,12 +86,8 @@ public final class MovieTableModel
     return this._originalTitle;
   }
 
-  public Date getPublishedDate() {
+  public LocalDateTime getPublishedDate() {
     return this._publishedDate;
-  }
-
-  public Date getShowingDate() {
-    return this._showingDate;
   }
 
   public int getDurationMinutes() {

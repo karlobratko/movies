@@ -5,7 +5,7 @@
 package hr.kbratko.dal.concrete.model;
 
 import hr.kbratko.dal.base.model.BaseTableModel;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -31,9 +31,9 @@ public final class ActorTableModel
                          Integer createdBy,
                          Integer updatedBy,
                          Integer deletedBy,
-                         Date createDate,
-                         Date updateDate,
-                         Date deleteDate) {
+                         LocalDateTime createDate,
+                         LocalDateTime updateDate,
+                         LocalDateTime deleteDate) {
     super(id,
           guid,
           createdBy,
