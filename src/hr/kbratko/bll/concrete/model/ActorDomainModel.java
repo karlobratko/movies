@@ -18,6 +18,13 @@ public final class ActorDomainModel
   private final int _personFK;
 
   public ActorDomainModel(int movieFK,
+                          int personFK) {
+    super();
+    this._movieFK = movieFK;
+    this._personFK = personFK;
+  }
+
+  public ActorDomainModel(int movieFK,
                           int personFK,
                           Integer id,
                           UUID guid,

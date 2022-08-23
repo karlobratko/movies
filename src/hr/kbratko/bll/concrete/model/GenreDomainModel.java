@@ -16,6 +16,11 @@ public final class GenreDomainModel
 
   private final String _name;
 
+  public GenreDomainModel(String name) {
+    super();
+    this._name = name;
+  }
+
   public GenreDomainModel(String name,
                           Integer id,
                           UUID guid,

@@ -18,6 +18,13 @@ public final class MovieGenreDomainModel
   private final int _genreFK;
 
   public MovieGenreDomainModel(int movieFK,
+                               int genreFK) {
+    super();
+    this._movieFK = movieFK;
+    this._genreFK = genreFK;
+  }
+
+  public MovieGenreDomainModel(int movieFK,
                                int genreFK,
                                Integer id,
                                UUID guid,

@@ -18,6 +18,13 @@ public final class PersonDomainModel
   private final String _lName;
 
   public PersonDomainModel(String fName,
+                           String lName) {
+    super();
+    this._fName = fName;
+    this._lName = lName;
+  }
+
+  public PersonDomainModel(String fName,
                            String lName,
                            Integer id,
                            UUID guid,

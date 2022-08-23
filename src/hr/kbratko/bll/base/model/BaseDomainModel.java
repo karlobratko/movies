@@ -16,7 +16,10 @@ public abstract class BaseDomainModel<TKey>
 
   protected TKey _id;
   protected UUID _guid;
-  protected final boolean _isAvailable;
+  protected boolean _isAvailable;
+
+  public BaseDomainModel() {
+  }
 
   public BaseDomainModel(TKey id, UUID guid, boolean isAvailable) {
     this._id = id;
@@ -37,6 +40,10 @@ public abstract class BaseDomainModel<TKey>
   @Override
   public boolean isAvailable() {
     return this._isAvailable;
+  }
+
+  public void setIsAvailable(boolean isAvailable) {
+    this._isAvailable = isAvailable;
   }
 
   @Override

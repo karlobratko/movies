@@ -20,6 +20,15 @@ public final class UserDomainModel
 
   public UserDomainModel(String username,
                          String password,
+                         boolean isAdmin) {
+    super();
+    this._username = username;
+    this._password = password;
+    this._isAdmin = isAdmin;
+  }
+
+  public UserDomainModel(String username,
+                         String password,
                          boolean isAdmin,
                          Integer id,
                          UUID guid,

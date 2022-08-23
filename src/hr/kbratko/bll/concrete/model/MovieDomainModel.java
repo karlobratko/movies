@@ -5,7 +5,8 @@
 package hr.kbratko.bll.concrete.model;
 
 import hr.kbratko.bll.base.model.BaseDomainModel;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,8 +19,7 @@ public class MovieDomainModel
 
   private final String _title;
   private final String _originalTitle;
-  private final Date _publishedDate;
-  private final Date _showingDate;
+  private final LocalDateTime _publishedDate;
   private final int _durationMinutes;
   private final Optional<String> _description;
   private final Optional<String> _webPath;
@@ -28,8 +28,26 @@ public class MovieDomainModel
 
   public MovieDomainModel(String title,
                           String originalTitle,
-                          Date publishedDate,
-                          Date showingDate,
+                          LocalDateTime publishedDate,
+                          int durationMinutes,
+                          String description,
+                          String webPath,
+                          String imagePath,
+                          boolean isFavorite) {
+    super();
+    this._title = title;
+    this._originalTitle = originalTitle;
+    this._publishedDate = publishedDate;
+    this._durationMinutes = durationMinutes;
+    this._description = Optional.ofNullable(description);
+    this._webPath = Optional.ofNullable(webPath);
+    this._imagePath = Optional.ofNullable(imagePath);
+    this._isFavorite = isFavorite;
+  }
+
+  public MovieDomainModel(String title,
+                          String originalTitle,
+                          LocalDateTime publishedDate,
                           int durationMinutes,
                           String description,
                           String webPath,
@@ -42,7 +60,6 @@ public class MovieDomainModel
     this._title = title;
     this._originalTitle = originalTitle;
     this._publishedDate = publishedDate;
-    this._showingDate = showingDate;
     this._durationMinutes = durationMinutes;
     this._description = Optional.ofNullable(description);
     this._webPath = Optional.ofNullable(webPath);
@@ -58,14 +75,10 @@ public class MovieDomainModel
     return this._originalTitle;
   }
 
-  public Date getPublishedDate() {
+  public LocalDateTime getPublishedDate() {
     return this._publishedDate;
   }
-
-  public Date getShowingDate() {
-    return this._showingDate;
-  }
-
+  
   public int getDurationMinutes() {
     return this._durationMinutes;
   }
@@ -107,7 +120,11 @@ public class MovieDomainModel
 
   @Override
   public String toString() {
-    return String.format("%d, %s", this._id, this._publishedDate);
+    return String.format("%d, %s (%s), %s",
+                         this._id,
+                         this._title,
+                         this._originalTitle,
+                         this._publishedDate.format(DateTimeFormatter.ISO_DATE));
   }
 
 }
