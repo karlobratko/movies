@@ -6,6 +6,7 @@ package hr.kbratko.dal.base.repo.model;
 
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.concrete.model.MovieTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -13,5 +14,11 @@ import hr.kbratko.dal.concrete.model.MovieTableModel;
  */
 public interface MovieTableModelRepository
   extends TableModelRepository<Integer, MovieTableModel> {
+
+  int deleteAll()
+    throws Exception;
+
+  int deleteAll(Optional<Integer> deletedBy)
+    throws Exception;
 
 }

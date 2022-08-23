@@ -13,14 +13,15 @@ import hr.kbratko.dal.concrete.status.DeleteStatus;
 import hr.kbratko.dal.concrete.status.ReadMethod;
 import hr.kbratko.dal.concrete.status.UpdateStatus;
 import hr.kbratko.lib.extensions.Collections;
+import java.sql.Timestamp;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -96,16 +97,17 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
     TKey deletedBy = (TKey) resultSet.getObject(DELETED_BY);
     deletedBy = resultSet.wasNull() ? null : deletedBy;
 
-    Date deleteDate = resultSet.getTimestamp(DELETE_DATE);
-    deleteDate = resultSet.wasNull() ? null : deleteDate;
+    Timestamp tmpDeleteDate = resultSet.getTimestamp(DELETE_DATE);
+    LocalDateTime deleteDate = resultSet.wasNull() ? null : tmpDeleteDate
+                  .toLocalDateTime();
 
     model.setId((TKey) resultSet.getObject(ID));
     model.setGuid(UUID.fromString(resultSet.getString(GUID)));
     model.setCreatedBy((TKey) resultSet.getObject(CREATED_BY));
     model.setUpdatedBy((TKey) resultSet.getObject(UPDATED_BY));
     model.setDeletedBy(deletedBy);
-    model.setCreateDate(resultSet.getTimestamp(CREATE_DATE));
-    model.setUpdateDate(resultSet.getTimestamp(UPDATE_DATE));
+    model.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toLocalDateTime());
+    model.setUpdateDate(resultSet.getTimestamp(UPDATE_DATE).toLocalDateTime());
     model.setDeleteDate(deleteDate);
 
     return model;
@@ -133,7 +135,11 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
 
       statement.registerOutParameter(1, Types.INTEGER);
       this.parameterize(statement, model);
-      statement.setObject(PARAMETER_CREATED_BY, createdBy.orElse(null));
+
+      if (createdBy.isPresent())
+        statement.setObject(PARAMETER_CREATED_BY, createdBy.get());
+      else
+        statement.setNull(PARAMETER_CREATED_BY, Types.NULL);
 
       try ( ResultSet resultSet = statement.executeQuery()) {
         TModel returnedModel = resultSet.next() ? this.model(resultSet) : null;
@@ -166,7 +172,11 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
 
       statement.registerOutParameter(1, Types.INTEGER);
       statement.setString(PARAMETER_GUID, guid.toString());
-      statement.setObject(PARAMETER_DELETED_BY, deletedBy.orElse(null));
+
+      if (deletedBy.isPresent())
+        statement.setObject(PARAMETER_DELETED_BY, deletedBy.get());
+      else
+        statement.setNull(PARAMETER_DELETED_BY, Types.NULL);
 
       statement.execute();
 
@@ -208,7 +218,11 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
                               this.getReadProcedureSignature())) {
 
       statement.setInt(PARAMETER_METHOD, method.toInteger());
-      statement.setObject(PARAMETER_ID, id.orElse(null));
+
+      if (id.isPresent())
+        statement.setObject(PARAMETER_ID, id.get());
+      else
+        statement.setNull(PARAMETER_ID, Types.NULL);
 
       Collection<TModel> collection = new ArrayList<>();
       try ( ResultSet resultSet = statement.executeQuery()) {
@@ -245,7 +259,11 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
       statement.registerOutParameter(1, Types.INTEGER);
       statement.setString(PARAMETER_GUID, guid.toString());
       this.parameterize(statement, model);
-      statement.setObject(PARAMETER_UPDATED_BY, updatedBy.orElse(null));
+
+      if (updatedBy.isPresent())
+        statement.setObject(PARAMETER_UPDATED_BY, updatedBy.get());
+      else
+        statement.setNull(PARAMETER_UPDATED_BY, Types.NULL);
 
       statement.execute();
 

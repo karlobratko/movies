@@ -122,7 +122,10 @@ public final class SqlUserTableModelRepository
       statement.registerOutParameter(1, Types.INTEGER);
       statement.setString(USERNAME, username);
       statement.setString(PASSWORD, password);
-      statement.setObject(CREATED_BY, createdBy.orElse(null));
+      if (createdBy.isPresent())
+        statement.setInt(CREATED_BY, createdBy.get());
+      else
+        statement.setNull(CREATED_BY, Types.NULL);
 
       try ( ResultSet resultSet = statement.executeQuery()) {
         UserTableModel returnedModel = resultSet.next() ? model(resultSet)
