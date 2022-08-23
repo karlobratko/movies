@@ -4,7 +4,11 @@
  */
 package hr.kbratko.ui.view;
 
+import hr.kbratko.bll.base.manager.model.MovieDomainModelManager;
+import hr.kbratko.bll.concrete.factory.MovieDomainModelManagerFactory;
 import hr.kbratko.bll.concrete.model.UserDomainModel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,8 +17,13 @@ import hr.kbratko.bll.concrete.model.UserDomainModel;
 public class UserView
   extends BaseUserView {
 
+  private static final MovieDomainModelManager _movieManager =
+                                              MovieDomainModelManagerFactory
+                                                .getManager();
+
   /**
    * Creates new form User
+   *
    * @param loggedInUser
    * @param cardContainer
    */

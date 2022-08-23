@@ -4,7 +4,13 @@
  */
 package hr.kbratko.ui.view;
 
+import hr.kbratko.bll.concrete.model.MovieDomainModel;
 import hr.kbratko.bll.concrete.model.UserDomainModel;
+import hr.kbratko.bll.concrete.manager.DomainManager;
+import hr.kbratko.lib.ui.Messages;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -13,14 +19,20 @@ import hr.kbratko.bll.concrete.model.UserDomainModel;
 public class AdminView
   extends BaseUserView {
 
+  private final DomainManager _domainManager = new DomainManager();
+
+  private final DefaultListModel<MovieDomainModel> _movieListModel = new DefaultListModel<>();
+
   /**
    * Creates new form AdminView
+   *
    * @param loggedInUser
    * @param cardContainer
    */
   public AdminView(UserDomainModel loggedInUser, CardContainer cardContainer) {
     super(loggedInUser, cardContainer);
     initComponents();
+    this.init();
   }
 
   /**
@@ -32,30 +44,105 @@ public class AdminView
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jButton1 = new javax.swing.JButton();
+    jScrollPane1 = new javax.swing.JScrollPane();
+    lsMovies = new javax.swing.JList<>();
+    btnLoadData = new javax.swing.JButton();
+    btnDeleteData = new javax.swing.JButton();
 
-    jButton1.setText("jButton1");
+    setBackground(new java.awt.Color(255, 255, 255));
+
+    jScrollPane1.setViewportView(lsMovies);
+
+    btnLoadData.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+    btnLoadData.setText("Load data");
+    btnLoadData.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btnLoadDataActionPerformed(evt);
+      }
+    });
+
+    btnDeleteData.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+    btnDeleteData.setText("Delete data");
+    btnDeleteData.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btnDeleteDataActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(606, Short.MAX_VALUE)
-        .addComponent(jButton1)
-        .addGap(599, 599, 599))
+      .addGroup(layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1268, Short.MAX_VALUE)
+          .addComponent(btnLoadData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(btnDeleteData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGap(239, 239, 239)
-        .addComponent(jButton1)
-        .addContainerGap(459, Short.MAX_VALUE))
+        .addContainerGap()
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btnLoadData, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btnDeleteData, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
+  private void btnLoadDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadDataActionPerformed
+    try {
+      _domainManager.loadRss();
+      this.loadModel();
+    }
+    catch (Exception ex) {
+      Messages.showErrorMessage("Error occured", ex.getMessage());
+      Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }//GEN-LAST:event_btnLoadDataActionPerformed
+
+  private void btnDeleteDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteDataActionPerformed
+    try {
+      _domainManager.deleteAll();
+      this.loadModel();
+    }
+    catch (Exception ex) {
+      Messages.showErrorMessage("Error occured", ex.getMessage());
+      Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }//GEN-LAST:event_btnDeleteDataActionPerformed
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton jButton1;
+  private javax.swing.JButton btnDeleteData;
+  private javax.swing.JButton btnLoadData;
+  private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JList<MovieDomainModel> lsMovies;
   // End of variables declaration//GEN-END:variables
+
+  private void init() {
+    try {
+      loadModel();
+    }
+    catch (Exception ex) {
+      Messages.showErrorMessage("Error occured", ex.getMessage());
+      Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+      System.exit(1);
+    }
+  }
+
+  private void loadModel()
+    throws Exception {
+    _movieListModel.clear();
+    _movieListModel.addAll(
+      _domainManager
+        .getMovieManager()
+        .getAllIfAvailable());
+    lsMovies.setModel(_movieListModel);
+  }
+
 }
