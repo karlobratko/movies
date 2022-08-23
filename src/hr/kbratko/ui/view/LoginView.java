@@ -24,9 +24,9 @@ import javax.swing.JTextField;
 public class LoginView
   extends BaseView {
 
-  private static final UserDomainModelManager _userManager =
-                                              UserDomainModelManagerFactory
-                                                .getManager();
+  private final UserDomainModelManager _userManager =
+                                       UserDomainModelManagerFactory
+                                         .getManager();
 
   private final Collection<JTextField> _validationFields;
 
