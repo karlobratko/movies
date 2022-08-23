@@ -17,4 +17,8 @@ public interface Identifiable<TKey> {
 
   UUID getGuid();
 
+  void setId(final TKey id);
+
+  void setGuid(final UUID guid);
+
 }

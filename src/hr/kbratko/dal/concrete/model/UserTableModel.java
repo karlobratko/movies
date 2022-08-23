@@ -5,9 +5,8 @@
 package hr.kbratko.dal.concrete.model;
 
 import hr.kbratko.dal.base.model.BaseTableModel;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -23,17 +22,33 @@ public final class UserTableModel
 
   public UserTableModel(String username,
                         String passwordHash,
+                        boolean isAdmin) {
+    super();
+    this._username = Objects.requireNonNull(username);
+    this._passwordHash = passwordHash;
+    this._isAdmin = isAdmin;
+  }
+
+  public UserTableModel(String username,
+                        String passwordHash,
                         boolean isAdmin,
                         Integer id,
                         UUID guid,
                         Integer createdBy,
                         Integer updatedBy,
-                        Optional<Integer> deletedBy,
-                        Date createDate,
-                        Date updateDate,
-                        Optional<Date> deleteDate) {
-    super(id, guid, createdBy, updatedBy, deletedBy, createDate, updateDate, deleteDate);
-    this._username = Objects.requireNonNull(username);
+                        Integer deletedBy,
+                        LocalDateTime createDate,
+                        LocalDateTime updateDate,
+                        LocalDateTime deleteDate) {
+    super(id,
+          guid,
+          createdBy,
+          updatedBy,
+          deletedBy,
+          createDate,
+          updateDate,
+          deleteDate);
+    this._username = username;
     this._passwordHash = passwordHash;
     this._isAdmin = isAdmin;
   }
@@ -48,6 +63,24 @@ public final class UserTableModel
 
   public boolean isAdmin() {
     return this._isAdmin;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+
+    if (obj == null || obj.getClass() != this.getClass())
+      return false;
+
+    var user = (UserTableModel) obj;
+
+    return user._username.equals(this._username);
+  }
+
+  @Override
+  public int hashCode() {
+    return this._username.hashCode();
   }
 
   @Override

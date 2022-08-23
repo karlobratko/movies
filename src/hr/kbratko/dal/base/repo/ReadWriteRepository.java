@@ -17,13 +17,13 @@ import hr.kbratko.dal.concrete.status.UpdateStatus;
 public interface ReadWriteRepository<TModel>
   extends ReadOnlyRepository<TModel> {
 
-  StatusResult<CreateStatus, TModel> create(TModel model)
+  StatusResult<CreateStatus, TModel> create(final TModel model)
     throws Exception;
 
-  UpdateStatus update(TModel model)
+  UpdateStatus update(final TModel model)
     throws Exception;
 
-  DeleteStatus delete(TModel model)
+  DeleteStatus delete(final TModel model)
     throws Exception;
 
 }

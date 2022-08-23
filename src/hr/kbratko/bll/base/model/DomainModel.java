@@ -16,4 +16,6 @@ public interface DomainModel<TKey>
 
   boolean isAvailable();
 
+  void setIsAvailable(boolean isAvailable);
+
 }

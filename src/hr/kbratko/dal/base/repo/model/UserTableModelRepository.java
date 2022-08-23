@@ -17,28 +17,32 @@ import java.util.Optional;
 public interface UserTableModelRepository
   extends TableModelRepository<Integer, UserTableModel> {
 
-  UserTableModel login(UserTableModel model, String password)
+  UserTableModel login(final UserTableModel model, final String password)
     throws Exception;
 
-  UserTableModel login(String username, String password)
+  UserTableModel login(final String username, final String password)
     throws Exception;
 
-  StatusResult<RegistrationStatus, UserTableModel> register(UserTableModel model,
-                                                            String password)
+  StatusResult<RegistrationStatus, UserTableModel> register(
+    final UserTableModel model,
+    final String password)
     throws Exception;
 
-  StatusResult<RegistrationStatus, UserTableModel> register(String username,
-                                                            String password)
+  StatusResult<RegistrationStatus, UserTableModel> register(
+    final String username,
+    final String password)
     throws Exception;
 
-  StatusResult<RegistrationStatus, UserTableModel> register(UserTableModel model,
-                                                            String password,
-                                                            Optional<Integer> createdBy)
+  StatusResult<RegistrationStatus, UserTableModel> register(
+    final UserTableModel model,
+    final String password,
+    final Optional<Integer> createdBy)
     throws Exception;
 
-  StatusResult<RegistrationStatus, UserTableModel> register(String username,
-                                                            String password,
-                                                            Optional<Integer> createdBy)
+  StatusResult<RegistrationStatus, UserTableModel> register(
+    final String username,
+    final String password,
+    final Optional<Integer> createdBy)
     throws Exception;
 
 }

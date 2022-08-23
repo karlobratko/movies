@@ -5,6 +5,9 @@
 package hr.kbratko.lib.ui;
 
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
@@ -23,8 +26,22 @@ public final class Borders {
   private Borders() {
   }
 
-  public static void setBorderDefault(JComponent component) throws Exception {
-    component.setBorder(component.getClass().getDeclaredConstructor().newInstance().getBorder());
+  public static void setBorderDefault(JComponent component) {
+    try {
+      component.setBorder(component
+        .getClass()
+        .getDeclaredConstructor()
+        .newInstance()
+        .getBorder());
+    }
+    catch (NoSuchMethodException |
+           SecurityException |
+           InstantiationException |
+           IllegalAccessException |
+           IllegalArgumentException |
+           InvocationTargetException ex) {
+      Logger.getLogger(Borders.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public static void setBorderError(JComponent component) {

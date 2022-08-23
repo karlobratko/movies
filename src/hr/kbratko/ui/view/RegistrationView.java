@@ -24,9 +24,9 @@ import javax.swing.JTextField;
 public class RegistrationView
   extends BaseView {
 
-  private static final UserDomainModelManager _userManager =
-                                              UserDomainModelManagerFactory
-                                                .getManager();
+  private final UserDomainModelManager _userManager =
+                                       UserDomainModelManagerFactory
+                                         .getManager();
 
   private final Collection<JTextField> _validationFields;
 
@@ -138,6 +138,8 @@ public class RegistrationView
   }// </editor-fold>//GEN-END:initComponents
 
   private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    this.defaultValidationFieldBorders();
+    this.cleanValidationFields();
     this.getCardContainer().showPanel(MainView.LOGIN_VIEW);
   }//GEN-LAST:event_btnLoginActionPerformed
 
@@ -151,16 +153,19 @@ public class RegistrationView
                                                      .getPassword()).trim());
 
       if (Objects.isNull(user)) {
+        this.tfPassword.setText("");
         Messages.showErrorMessage("Error occured while registering user",
                                   "Please try to register later.");
         return;
       }
 
+      this.cleanValidationFields();
       Messages.showInformationMessage("User registered",
                                       "Please login to use application.");
       this.getCardContainer().showPanel(MainView.LOGIN_VIEW);
     }
     catch (Exception ex) {
+      this.cleanValidationFields();
       Messages.showErrorMessage("Error occured", ex.getMessage());
       Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -180,22 +185,25 @@ public class RegistrationView
   private boolean isFormValid() {
     boolean ok = true;
 
-    try {
-      for (JTextField field : this._validationFields) {
-        String text = field.getText().trim();
-        ok &= !text.isEmpty();
+    for (JTextField field : this._validationFields) {
+      String text = field.getText().trim();
+      ok &= !text.isEmpty();
 
-        if (text.isEmpty())
-          Borders.setBorderError(field);
-        else
-          Borders.setBorderDefault(field);
-      }
-    }
-    catch (Exception ex) {
-      Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+      if (text.isEmpty())
+        Borders.setBorderError(field);
+      else
+        Borders.setBorderDefault(field);
     }
 
     return ok;
+  }
+
+  private void cleanValidationFields() {
+    this._validationFields.forEach(field -> field.setText(""));
+  }
+
+  private void defaultValidationFieldBorders() {
+    this._validationFields.forEach(field -> Borders.setBorderDefault(field));
   }
 
 }

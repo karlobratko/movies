@@ -4,7 +4,9 @@
  */
 package hr.kbratko.bll.concrete.factory;
 
-import hr.kbratko.bll.concrete.manager.UserDomainModelManager;
+import hr.kbratko.bll.base.manager.model.UserDomainModelManager;
+import hr.kbratko.bll.concrete.manager.general.GeneralUserDomainModelManager;
+import hr.kbratko.dal.concrete.factory.UserTableModelRepositoryFactory;
 
 /**
  *
@@ -15,8 +17,10 @@ public final class UserDomainModelManagerFactory {
   private UserDomainModelManagerFactory() {
   }
 
-  public static hr.kbratko.bll.base.manager.model.UserDomainModelManager getManager() {
-    return new UserDomainModelManager();
+  public static UserDomainModelManager getManager() {
+    return new GeneralUserDomainModelManager(
+      UserTableModelRepositoryFactory.getRepository()
+    );
   }
 
 }

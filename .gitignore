@@ -27,3 +27,6 @@ replay_pid*
 
 # editor opened files
 */private/private.xml
+
+#assets
+/assets/

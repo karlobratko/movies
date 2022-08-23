@@ -2,18 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package hr.kbratko.bll.concrete.manager;
+package hr.kbratko.bll.concrete.manager.general;
 
 import hr.kbratko.bll.base.manager.BaseDomainModelManager;
+import hr.kbratko.bll.base.manager.model.UserDomainModelManager;
 import hr.kbratko.bll.concrete.model.UserDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.UserTableModelRepository;
 import hr.kbratko.dal.base.status.StatusResult;
-import hr.kbratko.dal.concrete.factory.UserTableModelRepositoryFactory;
 import hr.kbratko.dal.concrete.model.UserTableModel;
 import hr.kbratko.dal.concrete.status.RegistrationStatus;
-import static hr.kbratko.dal.concrete.status.RegistrationStatus.RECREATED;
-import static hr.kbratko.dal.concrete.status.RegistrationStatus.UNIQUE_VIOLATION;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,13 +19,15 @@ import java.util.Optional;
  *
  * @author kbratko
  */
-public class UserDomainModelManager
+public final class GeneralUserDomainModelManager
   extends BaseDomainModelManager<Integer, UserTableModel, UserDomainModel>
-  implements hr.kbratko.bll.base.manager.model.UserDomainModelManager {
+  implements UserDomainModelManager {
 
-  private static final UserTableModelRepository _repository =
-                                                UserTableModelRepositoryFactory
-                                                  .getRepository();
+  private final UserTableModelRepository _repository;
+
+  public GeneralUserDomainModelManager(UserTableModelRepository repository) {
+    this._repository = repository;
+  }
 
   @Override
   public TableModelRepository<Integer, UserTableModel> getRepository() {
@@ -53,10 +53,10 @@ public class UserDomainModelManager
                               domainModel.getGuid(),
                               null,
                               null,
-                              Optional.empty(),
                               null,
                               null,
-                              Optional.empty());
+                              null,
+                              null);
   }
 
   @Override

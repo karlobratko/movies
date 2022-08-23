@@ -4,7 +4,7 @@
  */
 package hr.kbratko.dal.base.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -14,16 +14,28 @@ import java.util.Optional;
  */
 public interface Manageable<TKey> {
 
-  Date getCreateDate();
+  LocalDateTime getCreateDate();
 
   TKey getCreatedBy();
 
-  Date getUpdateDate();
+  LocalDateTime getUpdateDate();
 
   TKey getUpdatedBy();
 
-  Optional<Date> getDeleteDate();
+  Optional<LocalDateTime> getDeleteDate();
 
   Optional<TKey> getDeletedBy();
+
+  void setCreateDate(final LocalDateTime createDate);
+
+  void setCreatedBy(final TKey createdBy);
+
+  void setUpdateDate(final LocalDateTime updateDate);
+
+  void setUpdatedBy(final TKey updatedBy);
+
+  void setDeleteDate(final LocalDateTime deleteDate);
+
+  void setDeletedBy(final TKey deletedBy);
 
 }
