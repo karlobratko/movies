@@ -618,7 +618,6 @@ IF OBJECT_ID(N'MOVIES.dbo.Movies', N'U') IS NULL BEGIN
     , [Title]           nvarchar(256)  NOT NULL
     , [OriginalTitle]   nvarchar(256)  NOT NULL
     , [PublishedDate]   datetime       NOT NULL
-    , [ShowingDate]     datetime       NOT NULL
     , [DurationMinutes] int            NOT NULL
     , [Description]     nvarchar(2056) NULL
     , [WebPath]         nvarchar(512)  NULL
@@ -662,8 +661,7 @@ return_code = INTERNAL_ERROR (-1)
 ****************************************************/
 CREATE OR ALTER PROCEDURE [dbo].[MovieCreate] ( @Title           AS nvarchar(256) 
                                               , @OriginalTitle   AS nvarchar(256) 
-                                              , @PublishedDate   AS datetime      
-                                              , @ShowingDate     AS datetime      
+                                              , @PublishedDate   AS datetime         
                                               , @DurationMinutes AS int           
                                               , @Description     AS nvarchar(2056)
                                               , @WebPath         AS nvarchar(512) 
@@ -691,7 +689,6 @@ AS BEGIN
     , [Title]
     , [OriginalTitle]
     , [PublishedDate]
-    , [ShowingDate]
     , [DurationMinutes]
     , [Description]
     , [WebPath]
@@ -703,7 +700,6 @@ AS BEGIN
     , @Title
     , @OriginalTitle
     , @PublishedDate
-    , @ShowingDate
     , @DurationMinutes
     , @Description
     , @WebPath
@@ -723,7 +719,6 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
@@ -744,7 +739,6 @@ AS BEGIN
       , [Title]           = @Title
       , [OriginalTitle]   = @OriginalTitle
       , [PublishedDate]   = @PublishedDate
-      , [ShowingDate]     = @ShowingDate
       , [DurationMinutes] = @DurationMinutes
       , [Description]     = @Description
       , [WebPath]         = @WebPath
@@ -764,14 +758,13 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
       , [ImagePath]
       , [IsFavorite]
     FROM [dbo].[Movies]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -794,14 +787,13 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
       , [ImagePath]
       , [IsFavorite]
     FROM [dbo].[Movies]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -892,7 +884,6 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
@@ -914,7 +905,6 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
@@ -937,7 +927,6 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
@@ -960,7 +949,6 @@ AS BEGIN
       , [Title]
       , [OriginalTitle]
       , [PublishedDate]
-      , [ShowingDate]
       , [DurationMinutes]
       , [Description]
       , [WebPath]
@@ -1002,7 +990,6 @@ CREATE OR ALTER PROCEDURE [dbo].[MovieUpdate] ( @Guid            AS uniqueidenti
                                               , @Title           AS nvarchar(256) 
                                               , @OriginalTitle   AS nvarchar(256) 
                                               , @PublishedDate   AS datetime      
-                                              , @ShowingDate     AS datetime      
                                               , @DurationMinutes AS int           
                                               , @Description     AS nvarchar(2056)
                                               , @WebPath         AS nvarchar(512) 
@@ -1056,7 +1043,6 @@ AS BEGIN
     , [Title]           = @Title
     , [OriginalTitle]   = @OriginalTitle
     , [PublishedDate]   = @PublishedDate
-    , [ShowingDate]     = @ShowingDate
     , [DurationMinutes] = @DurationMinutes
     , [Description]     = @Description
     , [WebPath]         = @WebPath
@@ -1070,6 +1056,31 @@ AS BEGIN
   ELSE BEGIN
     RETURN -1
   END
+END
+GO
+
+/****************************************************
+name = [dbo].[MovieDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MovieDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[Movies]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
 END
 GO
 
@@ -1195,7 +1206,7 @@ AS BEGIN
       , [FName]
       , [LName]
     FROM [dbo].[People]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -1218,7 +1229,7 @@ AS BEGIN
       , [FName]
       , [LName]
     FROM [dbo].[People]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -1442,6 +1453,31 @@ END
 GO
 
 /****************************************************
+name = [dbo].[PersonDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[People]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
+END
+GO
+
+/****************************************************
 name = [dbo].[Directors]
 db_type = TABLE
 identifiable = 1
@@ -1566,7 +1602,7 @@ AS BEGIN
       , [MovieFK]
       , [PersonFK]
     FROM [dbo].[Directors]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -1589,7 +1625,7 @@ AS BEGIN
       , [MovieFK]
       , [PersonFK]
     FROM [dbo].[Directors]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -1813,6 +1849,31 @@ END
 GO
 
 /****************************************************
+name = [dbo].[DirectorDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[DirectorDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[Directors]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
+END
+GO
+
+/****************************************************
 name = [dbo].[Actors]
 db_type = TABLE
 identifiable = 1
@@ -1937,7 +1998,7 @@ AS BEGIN
       , [MovieFK]
       , [PersonFK]
     FROM [dbo].[Actors]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -1960,7 +2021,7 @@ AS BEGIN
       , [MovieFK]
       , [PersonFK]
     FROM [dbo].[Actors]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -2184,6 +2245,31 @@ END
 GO
 
 /****************************************************
+name = [dbo].[ActorDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[ActorDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[Actors]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
+END
+GO
+
+/****************************************************
 name = [dbo].[Genres]
 db_type = TABLE
 identifiable = 1
@@ -2294,7 +2380,7 @@ AS BEGIN
       , [DeletedBy]
       , [Name]
     FROM [dbo].[Genres]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -2316,7 +2402,7 @@ AS BEGIN
       , [DeletedBy]
       , [Name]
     FROM [dbo].[Genres]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -2532,6 +2618,31 @@ END
 GO
 
 /****************************************************
+name = [dbo].[GenreDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[Genres]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
+END
+GO
+
+/****************************************************
 name = [dbo].[MoviesGenres]
 db_type = TABLE
 identifiable = 1
@@ -2573,7 +2684,7 @@ END
 GO
 
 /****************************************************
-name = [dbo].[MoviesGenreCreate]
+name = [dbo].[MovieGenreCreate]
 db_type = STORED PROCEDURE
 sp_type = CREATE
 
@@ -2587,9 +2698,9 @@ return_code = INTERNAL_ERROR (-1)
             | UNIQUE_VIOLATION (2)
             | RECREATED (3)
 ****************************************************/
-CREATE OR ALTER PROCEDURE [dbo].[MoviesGenreCreate] ( @MovieFK   AS int 
-                                                    , @GenreFK   AS int 
-                                                    , @CreatedBy AS int )
+CREATE OR ALTER PROCEDURE [dbo].[MovieGenreCreate] ( @MovieFK   AS int 
+                                                   , @GenreFK   AS int 
+                                                   , @CreatedBy AS int )
 AS BEGIN
   IF @CreatedBy IS NULL BEGIN
     SET @CreatedBy = 1
@@ -2656,7 +2767,7 @@ AS BEGIN
       , [MovieFK]
       , [GenreFK]
     FROM [dbo].[MoviesGenres]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 3
   END
@@ -2679,7 +2790,7 @@ AS BEGIN
       , [MovieFK]
       , [GenreFK]
     FROM [dbo].[MoviesGenres]
-    WHERE [Id] = @Id
+    WHERE [Guid] = @Guid
 
     RETURN 2
   END
@@ -2690,7 +2801,7 @@ END
 GO
 
 /****************************************************
-name = [dbo].[MoviesGenresDelete]
+name = [dbo].[MovieGenreDelete]
 db_type = STORED PROCEDURE
 sp_type = DELETE
 
@@ -2703,8 +2814,8 @@ return_code = INTERNAL_ERROR (-1)
             | NOT_EXISTS (2)
             | ALREADY_DELETED (3)
 ****************************************************/
-CREATE OR ALTER PROCEDURE [dbo].[MoviesGenresDelete] ( @Guid      AS uniqueidentifier
-                                                     , @DeletedBy AS int )
+CREATE OR ALTER PROCEDURE [dbo].[MovieGenreDelete] ( @Guid      AS uniqueidentifier
+                                                   , @DeletedBy AS int )
 AS BEGIN
   IF @DeletedBy IS NULL BEGIN
     SET @DeletedBy = 1
@@ -2715,7 +2826,7 @@ AS BEGIN
   SELECT ALL TOP 1
       @Id         = [Id]
     , @DeleteDate = [DeleteDate]
-  FROM [dbo].[MoviesGenress]
+  FROM [dbo].[MoviesGenres]
   WHERE [Guid] = @Guid
 
   IF @Id IS NULL BEGIN
@@ -2726,7 +2837,7 @@ AS BEGIN
     RETURN 3
   END
 
-  UPDATE [dbo].[MoviesGenress]
+  UPDATE [dbo].[MoviesGenres]
   SET [DeletedBy]  = @DeletedBy
     , [DeleteDate] = GETDATE()
   WHERE [Guid] = @Guid
@@ -2825,7 +2936,7 @@ END
 GO
 
 /****************************************************
-name = [dbo].[MoviesGenreUpdate]
+name = [dbo].[MovieGenreUpdate]
 db_type = STORED PROCEDURE
 sp_type = UPDATE
 
@@ -2841,10 +2952,10 @@ return_code = INTERNAL_ERROR (-1)
             | DELETED (3)
             | UNIQUE_VIOLATION (4)
 ****************************************************/
-CREATE OR ALTER PROCEDURE [dbo].[MoviesGenreUpdate] ( @Guid      AS uniqueidentifier
-                                                    , @MovieFK   AS int
-                                                    , @GenreFK   AS int
-                                                    , @UpdatedBy AS int )
+CREATE OR ALTER PROCEDURE [dbo].[MovieGenreUpdate] ( @Guid      AS uniqueidentifier
+                                                   , @MovieFK   AS int
+                                                   , @GenreFK   AS int
+                                                   , @UpdatedBy AS int )
 AS BEGIN
   IF @UpdatedBy IS NULL BEGIN
     SET @UpdatedBy = 1
@@ -2899,5 +3010,30 @@ AS BEGIN
   ELSE BEGIN
     RETURN -1
   END
+END
+GO
+
+/****************************************************
+name = [dbo].[MovieGenreDeleteAll]
+db_type = STORED PROCEDURE
+sp_type = DELETE
+
+params = @DeletedBy (int identifier of SOFT DELETE initiator)
+
+return_value = VOID
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[MovieGenreDeleteAll] ( @DeletedBy AS int )
+AS BEGIN
+  IF @DeletedBy IS NULL BEGIN
+    SET @DeletedBy = 1
+  END
+
+  UPDATE [dbo].[MoviesGenres]
+  SET [DeletedBy]  = @DeletedBy
+    , [DeleteDate] = GETDATE()
+  WHERE [DeleteDate] IS NULL
+
+  RETURN @@ROWCOUNT
 END
 GO
