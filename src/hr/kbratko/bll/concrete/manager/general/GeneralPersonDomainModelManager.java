@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.PersonDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.PersonTableModelRepository;
 import hr.kbratko.dal.concrete.model.PersonTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -51,6 +52,19 @@ public final class GeneralPersonDomainModelManager
                                 null,
                                 null,
                                 null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((PersonTableModelRepository) this.getRepository()).deleteAll(
+      deletedBy);
   }
 
 }

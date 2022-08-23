@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.MovieDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.MovieTableModelRepository;
 import hr.kbratko.dal.concrete.model.MovieTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -35,7 +36,6 @@ public class GeneralMovieDomainModelManager
     return new MovieDomainModel(tableModel.getTitle(),
                                 tableModel.getOriginalTitle(),
                                 tableModel.getPublishedDate(),
-                                tableModel.getShowingDate(),
                                 tableModel.getDurationMinutes(),
                                 tableModel.getDescription().orElse(null),
                                 tableModel.getWebPath().orElse(null),
@@ -51,7 +51,6 @@ public class GeneralMovieDomainModelManager
     return new MovieTableModel(domainModel.getTitle(),
                                domainModel.getOriginalTitle(),
                                domainModel.getPublishedDate(),
-                               domainModel.getShowingDate(),
                                domainModel.getDurationMinutes(),
                                domainModel.getDescription().orElse(null),
                                domainModel.getWebPath().orElse(null),
@@ -65,6 +64,19 @@ public class GeneralMovieDomainModelManager
                                null,
                                null,
                                null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((MovieTableModelRepository) this.getRepository()).deleteAll(
+      deletedBy);
   }
 
 }

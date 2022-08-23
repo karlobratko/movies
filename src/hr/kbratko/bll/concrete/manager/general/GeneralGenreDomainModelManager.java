@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.GenreDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.GenreTableModelRepository;
 import hr.kbratko.dal.concrete.model.GenreTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -49,6 +50,19 @@ public final class GeneralGenreDomainModelManager
                                null,
                                null,
                                null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((GenreTableModelRepository) this.getRepository()).deleteAll(
+      deletedBy);
   }
 
 }

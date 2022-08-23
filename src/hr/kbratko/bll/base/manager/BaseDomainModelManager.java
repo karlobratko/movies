@@ -6,11 +6,8 @@ package hr.kbratko.bll.base.manager;
 
 import hr.kbratko.bll.base.model.DomainModel;
 import hr.kbratko.dal.base.model.TableModel;
-import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.status.StatusResult;
 import hr.kbratko.dal.concrete.status.CreateStatus;
-import hr.kbratko.dal.concrete.status.DeleteStatus;
-import hr.kbratko.dal.concrete.status.UpdateStatus;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;

@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.ActorDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.ActorTableModelRepository;
 import hr.kbratko.dal.concrete.model.ActorTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -51,6 +52,18 @@ public final class GeneralActorDomainModelManager
                                null,
                                null,
                                null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((ActorTableModelRepository) this.getRepository()).deleteAll(deletedBy);
   }
 
 }

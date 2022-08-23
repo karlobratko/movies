@@ -7,6 +7,7 @@ package hr.kbratko.bll.base.manager.model;
 import hr.kbratko.bll.base.manager.DomainModelManager;
 import hr.kbratko.bll.concrete.model.MovieGenreDomainModel;
 import hr.kbratko.dal.concrete.model.MovieGenreTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -15,5 +16,11 @@ import hr.kbratko.dal.concrete.model.MovieGenreTableModel;
 public interface MovieGenreDomainModelManager
   extends
   DomainModelManager<Integer, MovieGenreTableModel, MovieGenreDomainModel> {
+
+  int removeAll()
+    throws Exception;
+
+  int removeAll(Optional<Integer> deletedBy)
+    throws Exception;
 
 }

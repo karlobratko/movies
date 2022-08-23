@@ -7,6 +7,7 @@ package hr.kbratko.bll.base.manager.model;
 import hr.kbratko.bll.base.manager.DomainModelManager;
 import hr.kbratko.bll.concrete.model.PersonDomainModel;
 import hr.kbratko.dal.concrete.model.PersonTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -14,5 +15,11 @@ import hr.kbratko.dal.concrete.model.PersonTableModel;
  */
 public interface PersonDomainModelManager
   extends DomainModelManager<Integer, PersonTableModel, PersonDomainModel> {
+
+  int removeAll()
+    throws Exception;
+
+  int removeAll(Optional<Integer> deletedBy)
+    throws Exception;
 
 }

@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.DirectorDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.DirectorTableModelRepository;
 import hr.kbratko.dal.concrete.model.DirectorTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -52,6 +53,18 @@ public final class GeneralDirectorDomainModelManager
                                   null,
                                   null,
                                   null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((DirectorTableModelRepository) this.getRepository()).deleteAll(deletedBy);
   }
 
 }

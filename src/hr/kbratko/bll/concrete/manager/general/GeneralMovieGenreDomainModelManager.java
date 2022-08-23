@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.MovieGenreDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.MovieGenreTableModelRepository;
 import hr.kbratko.dal.concrete.model.MovieGenreTableModel;
+import java.util.Optional;
 
 /**
  *
@@ -52,6 +53,19 @@ public final class GeneralMovieGenreDomainModelManager
                                     null,
                                     null,
                                     null);
+  }
+
+  @Override
+  public int removeAll()
+    throws Exception {
+    return removeAll(Optional.empty());
+  }
+
+  @Override
+  public int removeAll(Optional<Integer> deletedBy)
+    throws Exception {
+    return ((MovieGenreTableModelRepository) this.getRepository()).deleteAll(
+      deletedBy);
   }
 
 }
