@@ -4,6 +4,8 @@
  */
 package hr.kbratko.ui.view;
 
+import hr.kbratko.ui.base.view.BaseUserView;
+import hr.kbratko.ui.base.view.CardContainer;
 import hr.kbratko.bll.concrete.model.MovieDomainModel;
 import hr.kbratko.bll.concrete.model.UserDomainModel;
 import hr.kbratko.bll.concrete.manager.DomainManager;

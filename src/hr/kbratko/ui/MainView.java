@@ -4,7 +4,7 @@
  */
 package hr.kbratko.ui;
 
-import hr.kbratko.ui.view.CardContainer;
+import hr.kbratko.ui.base.view.CardContainer;
 import hr.kbratko.ui.view.LoginView;
 import hr.kbratko.ui.view.RegistrationView;
 import java.awt.CardLayout;

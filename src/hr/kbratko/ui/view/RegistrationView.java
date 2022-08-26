@@ -4,6 +4,8 @@
  */
 package hr.kbratko.ui.view;
 
+import hr.kbratko.ui.base.view.BaseView;
+import hr.kbratko.ui.base.view.CardContainer;
 import hr.kbratko.bll.base.manager.model.UserDomainModelManager;
 import hr.kbratko.bll.concrete.factory.UserDomainModelManagerFactory;
 import hr.kbratko.bll.concrete.model.UserDomainModel;
@@ -13,6 +15,7 @@ import hr.kbratko.ui.MainView;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextField;
@@ -148,11 +151,14 @@ public class RegistrationView
       return;
 
     try {
-      UserDomainModel user = _userManager.register(tfUsername.getText().trim(),
-                                                   Arrays.toString(tfPassword
-                                                     .getPassword()).trim());
+      Optional<UserDomainModel> user =
+                                _userManager.register(
+                                  tfUsername.getText().trim(),
+                                  Arrays
+                                    .toString(tfPassword.getPassword())
+                                    .trim());
 
-      if (Objects.isNull(user)) {
+      if (user.isEmpty()) {
         this.tfPassword.setText("");
         Messages.showErrorMessage("Error occured while registering user",
                                   "Please try to register later.");

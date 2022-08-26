@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package hr.kbratko.ui.view;
+package hr.kbratko.ui.base.view;
 
 import hr.kbratko.bll.concrete.model.UserDomainModel;
 
@@ -10,7 +10,7 @@ import hr.kbratko.bll.concrete.model.UserDomainModel;
  *
  * @author kbratko
  */
-public class BaseUserView extends BaseView {
+public abstract class BaseUserView extends BaseView {
 
   private final UserDomainModel _loggedInUser;
 
