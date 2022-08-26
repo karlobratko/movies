@@ -197,16 +197,18 @@ public abstract class SqlDatabaseRepository<TKey, TModel extends TableModel<TKey
   }
 
   @Override
-  public TModel readById(final TKey id)
+  public Optional<TModel> readById(final TKey id)
     throws Exception {
-    return Collections.firstOrDefault(read(ReadMethod.ONE, Optional.of(id)));
+    return Optional.ofNullable(Collections.firstOrDefault(read(ReadMethod.ONE,
+                                                               Optional.of(id))));
   }
 
   @Override
-  public TModel readByIdAvailable(final TKey id)
+  public Optional<TModel> readByIdAvailable(final TKey id)
     throws Exception {
-    return Collections.firstOrDefault(read(ReadMethod.ONE_AVAILABLE, Optional
-                                           .of(id)));
+    return Optional.ofNullable(Collections.firstOrDefault(read(
+      ReadMethod.ONE_AVAILABLE,
+      Optional.of(id))));
   }
 
   private Collection<TModel> read(final ReadMethod method,

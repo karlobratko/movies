@@ -7,6 +7,7 @@ package hr.kbratko.dal.base.repo;
 import hr.kbratko.dal.base.model.Identifiable;
 import hr.kbratko.dal.concrete.status.DeleteStatus;
 import hr.kbratko.dal.concrete.status.UpdateStatus;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -18,7 +19,7 @@ import java.util.UUID;
 public interface IdentifiableRepository<TKey, TModel extends Identifiable<TKey>>
   extends ReadWriteRepository<TModel> {
 
-  TModel readById(final TKey id)
+  Optional<TModel> readById(final TKey id)
     throws Exception;
 
   UpdateStatus update(final UUID guid, final TModel model)

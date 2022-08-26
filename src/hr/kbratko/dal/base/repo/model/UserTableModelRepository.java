@@ -17,10 +17,10 @@ import java.util.Optional;
 public interface UserTableModelRepository
   extends TableModelRepository<Integer, UserTableModel> {
 
-  UserTableModel login(final UserTableModel model, final String password)
+  Optional<UserTableModel> login(final UserTableModel model, final String password)
     throws Exception;
 
-  UserTableModel login(final String username, final String password)
+  Optional<UserTableModel> login(final String username, final String password)
     throws Exception;
 
   StatusResult<RegistrationStatus, UserTableModel> register(

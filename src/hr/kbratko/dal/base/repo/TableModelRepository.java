@@ -29,7 +29,7 @@ public interface TableModelRepository<TKey, TModel extends TableModel<TKey>>
   Collection<TModel> readAllAvailable()
     throws Exception;
 
-  TModel readByIdAvailable(final TKey id)
+  Optional<TModel> readByIdAvailable(final TKey id)
     throws Exception;
 
   UpdateStatus update(final UUID guid, final TModel model,
