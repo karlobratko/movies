@@ -26,10 +26,10 @@ public interface DomainModelManager<TKey, TTableModel extends TableModel<TKey>, 
 
   TTableModel toTableModel(TDomainModel domainModel);
 
-  TDomainModel add(TDomainModel model)
+  Optional<TDomainModel> add(TDomainModel model)
     throws Exception;
 
-  TDomainModel add(TDomainModel model, Optional<TKey> createdBy)
+  Optional<TDomainModel> add(TDomainModel model, Optional<TKey> createdBy)
     throws Exception;
 
   int edit(TDomainModel model)
@@ -56,10 +56,10 @@ public interface DomainModelManager<TKey, TTableModel extends TableModel<TKey>, 
   int remove(UUID guid, Optional<TKey> deletedBy)
     throws Exception;
 
-  TDomainModel getById(TKey id)
+  Optional<TDomainModel> getById(TKey id)
     throws Exception;
 
-  TDomainModel getByIdIfAvailable(TKey id)
+  Optional<TDomainModel> getByIdIfAvailable(TKey id)
     throws Exception;
 
   Collection<TDomainModel> getAll()

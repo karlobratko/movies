@@ -30,6 +30,7 @@ import hr.kbratko.dal.concrete.projection.PersonProjection;
 import hr.kbratko.dal.concrete.repo.parser.rss.RssMovieProjectionRepository;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  *
@@ -87,50 +88,56 @@ public final class DomainManager {
 
     for (MovieProjection movie : movies) {
 
-      Collection<PersonDomainModel> directors = new ArrayList<>();
+      Collection<Optional<PersonDomainModel>> directors = new ArrayList<>();
       for (PersonProjection director : movie.directors())
         directors
           .add(this.getPersonManager()
             .add(new PersonDomainModel(director.fName(),
                                        director.lName())));
 
-      Collection<PersonDomainModel> actors = new ArrayList<>();
+      Collection<Optional<PersonDomainModel>> actors = new ArrayList<>();
       for (PersonProjection actor : movie.actors())
         actors
           .add(this.getPersonManager()
             .add(new PersonDomainModel(actor.fName(),
                                        actor.lName())));
 
-      Collection<GenreDomainModel> genres = new ArrayList<>();
+      Collection<Optional<GenreDomainModel>> genres = new ArrayList<>();
       for (GenreProjection genre : movie.genres())
         genres
           .add(this.getGenreManager().add(new GenreDomainModel(genre.name())));
 
-      MovieDomainModel addedMovie =
-                       this.getMovieManager()
-                         .add(new MovieDomainModel(movie.title(),
-                                                   movie.originalTitle(),
-                                                   movie.publishedDate(),
-                                                   movie.durationMinutes(),
-                                                   movie.description(),
-                                                   movie.webPath(),
-                                                   movie.imagePath(),
-                                                   false));
+      Optional<MovieDomainModel> addedMovie =
+                                 this.getMovieManager()
+                                   .add(new MovieDomainModel(movie.title(),
+                                                             movie
+                                                               .originalTitle(),
+                                                             movie
+                                                               .publishedDate(),
+                                                             movie
+                                                               .durationMinutes(),
+                                                             movie.description(),
+                                                             movie.webPath(),
+                                                             movie.imagePath(),
+                                                             false));
 
-      for (PersonDomainModel director : directors)
-        this.getDirectorManager()
-          .add(new DirectorDomainModel(addedMovie.getId(),
-                                       director.getId()));
+      for (Optional<PersonDomainModel> director : directors)
+        if (director.isPresent())
+          this.getDirectorManager()
+            .add(new DirectorDomainModel(addedMovie.get().getId(),
+                                         director.get().getId()));
 
-      for (PersonDomainModel actor : actors)
-        this.getActorManager()
-          .add(new ActorDomainModel(addedMovie.getId(),
-                                    actor.getId()));
+      for (Optional<PersonDomainModel> actor : actors)
+        if (actor.isPresent())
+          this.getActorManager()
+            .add(new ActorDomainModel(addedMovie.get().getId(),
+                                      actor.get().getId()));
 
-      for (GenreDomainModel genre : genres)
-        this.getMovieGenreManager()
-          .add(new MovieGenreDomainModel(addedMovie.getId(),
-                                         genre.getId()));
+      for (Optional<GenreDomainModel> genre : genres)
+        if (genre.isPresent())
+          this.getMovieGenreManager()
+            .add(new MovieGenreDomainModel(addedMovie.get().getId(),
+                                           genre.get().getId()));
 
     }
   }

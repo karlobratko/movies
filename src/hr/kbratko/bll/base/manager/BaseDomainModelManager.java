@@ -9,7 +9,6 @@ import hr.kbratko.dal.base.model.TableModel;
 import hr.kbratko.dal.base.status.StatusResult;
 import hr.kbratko.dal.concrete.status.CreateStatus;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.naming.OperationNotSupportedException;
@@ -25,24 +24,24 @@ public abstract class BaseDomainModelManager<TKey, TTableModel extends TableMode
   implements DomainModelManager<TKey, TTableModel, TDomainModel> {
 
   @Override
-  public TDomainModel add(TDomainModel model)
+  public Optional<TDomainModel> add(TDomainModel model)
     throws Exception {
     return add(model, Optional.empty());
   }
 
   @Override
-  public TDomainModel add(TDomainModel model, Optional<TKey> createdBy)
+  public Optional<TDomainModel> add(TDomainModel model, Optional<TKey> createdBy)
     throws Exception {
     StatusResult<CreateStatus, TTableModel> statusResult =
-                                            this.getRepository().create(this
-                                              .toTableModel(model),
-                                                                        createdBy);
+                                            this.getRepository()
+                                              .create(this.toTableModel(model),
+                                                      createdBy);
 
     return switch (statusResult.getStatus()) {
-      case INTERNAL_ERROR ->
-        null;
-      case SUCCESS, UNIQUE_VIOLATION, RECREATED ->
-        this.toDomainModel(statusResult.getModel());
+      case INTERNAL_ERROR, UNIQUE_VIOLATION ->
+        Optional.empty();
+      case SUCCESS, RECREATED ->
+        Optional.of(this.toDomainModel(statusResult.getModel()));
       default ->
         throw new OperationNotSupportedException();
     };
@@ -95,23 +94,19 @@ public abstract class BaseDomainModelManager<TKey, TTableModel extends TableMode
   }
 
   @Override
-  public TDomainModel getById(TKey id)
+  public Optional<TDomainModel> getById(TKey id)
     throws Exception {
-    TTableModel tableModel = this.getRepository().readById(id);
+    Optional<TTableModel> tableModel = this.getRepository().readById(id);
 
-    return Objects.nonNull(tableModel)
-             ? this.toDomainModel(tableModel)
-             : null;
+    return tableModel.map(this::toDomainModel);
   }
 
   @Override
-  public TDomainModel getByIdIfAvailable(TKey id)
+  public Optional<TDomainModel> getByIdIfAvailable(TKey id)
     throws Exception {
-    TTableModel tableModel = this.getRepository().readByIdAvailable(id);
+    Optional<TTableModel> tableModel = this.getRepository().readByIdAvailable(id);
 
-    return Objects.nonNull(tableModel)
-             ? this.toDomainModel(tableModel)
-             : null;
+    return tableModel.map(this::toDomainModel);
   }
 
   @Override
