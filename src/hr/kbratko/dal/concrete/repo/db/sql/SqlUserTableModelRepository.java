@@ -61,13 +61,13 @@ public final class SqlUserTableModelRepository
   }
 
   @Override
-  public UserTableModel login(final UserTableModel model, final String password)
+  public Optional<UserTableModel> login(final UserTableModel model, final String password)
     throws Exception {
     return login(model.getUsername(), password);
   }
 
   @Override
-  public UserTableModel login(final String username, final String password)
+  public Optional<UserTableModel> login(final String username, final String password)
     throws Exception {
     DataSource dataSource = this.getDataSource();
     try ( Connection connection = dataSource.getConnection();
@@ -78,7 +78,7 @@ public final class SqlUserTableModelRepository
       statement.setString(PASSWORD, password);
 
       try ( ResultSet resultSet = statement.executeQuery()) {
-        return resultSet.next() ? model(resultSet) : null;
+        return resultSet.next() ? Optional.of(model(resultSet)) : Optional.empty();
       }
     }
   }

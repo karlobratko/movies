@@ -17,22 +17,22 @@ public interface UserDomainModelManager
   extends
   DomainModelManager<Integer, UserTableModel, UserDomainModel> {
 
-  UserDomainModel login(UserDomainModel model)
+  Optional<UserDomainModel> login(UserDomainModel model)
     throws Exception;
 
-  UserDomainModel login(String username, String password)
+  Optional<UserDomainModel> login(String username, String password)
     throws Exception;
 
-  UserDomainModel register(UserDomainModel model)
+  Optional<UserDomainModel> register(UserDomainModel model)
     throws Exception;
 
-  UserDomainModel register(UserDomainModel model, Optional<Integer> createdBy)
+  Optional<UserDomainModel> register(UserDomainModel model, Optional<Integer> createdBy)
     throws Exception;
 
-  UserDomainModel register(String username, String password)
+  Optional<UserDomainModel> register(String username, String password)
     throws Exception;
 
-  UserDomainModel register(String username, String password, Optional<Integer> createdBy)
+  Optional<UserDomainModel> register(String username, String password, Optional<Integer> createdBy)
     throws Exception;
 
 }

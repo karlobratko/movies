@@ -4,41 +4,26 @@
  */
 package hr.kbratko.ui.view;
 
+import hr.kbratko.bll.concrete.model.UserDomainModel;
 import hr.kbratko.ui.base.view.BaseUserView;
 import hr.kbratko.ui.base.view.CardContainer;
-import hr.kbratko.bll.concrete.model.UserDomainModel;
 
 /**
  *
  * @author kbratko
  */
-public class UserView
+public class MovieCRUDView
   extends BaseUserView {
 
-  private static final String MOVIES_CRUD = "Movies";
-  private static final String PEOPLE_CRUD = "People";
-  private static final String GENRES_CRUD = "Genres";
-
   /**
-   * Creates new form User
+   * Creates new form MovieCRUDView
    *
    * @param loggedInUser
    * @param cardContainer
    */
-  public UserView(UserDomainModel loggedInUser, CardContainer cardContainer) {
+  public MovieCRUDView(UserDomainModel loggedInUser, CardContainer cardContainer) {
     super(loggedInUser, cardContainer);
     initComponents();
-
-    configurePanels();
-  }
-
-  private void configurePanels() {
-    tpMain.add(MOVIES_CRUD, new MovieCRUDView(this.getLoggedInUser(),
-                                              this.getCardContainer()));
-    tpMain.add(PEOPLE_CRUD, new PersonCRUDView(this.getLoggedInUser(),
-                                               this.getCardContainer()));
-    tpMain.add(GENRES_CRUD, new GenreCRUDView(this.getLoggedInUser(),
-                                              this.getCardContainer()));
   }
 
   /**
@@ -50,22 +35,19 @@ public class UserView
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    tpMain = new javax.swing.JTabbedPane();
-
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(tpMain, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
+      .addGap(0, 1280, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(tpMain, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+      .addGap(0, 720, Short.MAX_VALUE)
     );
   }// </editor-fold>//GEN-END:initComponents
 
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JTabbedPane tpMain;
   // End of variables declaration//GEN-END:variables
 }
