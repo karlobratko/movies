@@ -11,6 +11,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import javax.sql.DataSource;
 
@@ -26,7 +28,11 @@ public final class SqlPersonTableModelRepository
   private static final String LNAME = "LName";
   private static final String DELETED_BY = "DeletedBy";
 
+  private static final String PARAMETER_MOVIE_FK = "MovieFK";
+
   private static final String PROCEDURE_DELETE_ALL = "{ ? = CALL [dbo].[PersonDeleteAll] (?) }";
+  private static final String PROCEDURE_READ_ACTORS_BY_MOVIE_FK = "{ CALL [dbo].[PersonReadActorsByMovieFK] (?) }";
+  private static final String PROCEDURE_READ_DIRECTORS_BY_MOVIE_FK = "{ CALL [dbo].[PersonReadDirectorsByMovieFK] (?) }";
 
   @Override
   protected String getModelName() {
@@ -76,6 +82,46 @@ public final class SqlPersonTableModelRepository
       statement.execute();
 
       return statement.getInt(1);
+    }
+  }
+
+  @Override
+  public Collection<PersonTableModel> readActorsByMovieFK(int movieFK)
+    throws Exception {
+    DataSource dataSource = this.getDataSource();
+    try ( Connection connection = dataSource.getConnection();
+          CallableStatement statement = connection.prepareCall(
+                              PROCEDURE_READ_ACTORS_BY_MOVIE_FK)) {
+
+      statement.setInt(PARAMETER_MOVIE_FK, movieFK);
+
+      Collection<PersonTableModel> collection = new ArrayList<>();
+      try ( ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next())
+          collection.add(this.model(resultSet));
+
+        return collection;
+      }
+    }
+  }
+
+  @Override
+  public Collection<PersonTableModel> readDirectorsByMovieFK(int movieFK)
+    throws Exception {
+    DataSource dataSource = this.getDataSource();
+    try ( Connection connection = dataSource.getConnection();
+          CallableStatement statement = connection.prepareCall(
+                              PROCEDURE_READ_DIRECTORS_BY_MOVIE_FK)) {
+
+      statement.setInt(PARAMETER_MOVIE_FK, movieFK);
+
+      Collection<PersonTableModel> collection = new ArrayList<>();
+      try ( ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next())
+          collection.add(this.model(resultSet));
+
+        return collection;
+      }
     }
   }
 

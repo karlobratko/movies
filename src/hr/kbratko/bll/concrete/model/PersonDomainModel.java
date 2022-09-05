@@ -63,7 +63,7 @@ public final class PersonDomainModel
 
   @Override
   public String toString() {
-    return String.format("%d, %s %s", this._id, this._fName, this._lName);
+    return String.format("%s %s", this._fName, this._lName);
   }
 
 }

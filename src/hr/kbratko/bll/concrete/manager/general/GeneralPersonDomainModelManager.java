@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.PersonDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.PersonTableModelRepository;
 import hr.kbratko.dal.concrete.model.PersonTableModel;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -65,6 +66,26 @@ public final class GeneralPersonDomainModelManager
     throws Exception {
     return ((PersonTableModelRepository) this.getRepository()).deleteAll(
       deletedBy);
+  }
+
+  @Override
+  public Collection<PersonDomainModel> getActorsByMovieFK(int movieFK)
+    throws Exception {
+    return ((PersonTableModelRepository) this.getRepository())
+      .readActorsByMovieFK(movieFK)
+      .stream()
+      .map(this::toDomainModel)
+      .toList();
+  }
+
+  @Override
+  public Collection<PersonDomainModel> getDirectorsByMovieFK(int movieFK)
+    throws Exception {
+    return ((PersonTableModelRepository) this.getRepository())
+      .readDirectorsByMovieFK(movieFK)
+      .stream()
+      .map(this::toDomainModel)
+      .toList();
   }
 
 }

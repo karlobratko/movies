@@ -11,6 +11,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import javax.sql.DataSource;
 
@@ -25,7 +27,10 @@ public final class SqlGenreTableModelRepository
   private static final String NAME = "Name";
   private static final String DELETED_BY = "DeletedBy";
 
+  private static final String PARAMETER_MOVIE_FK = "MovieFK";
+
   private static final String PROCEDURE_DELETE_ALL = "{ ? = CALL [dbo].[GenreDeleteAll] (?) }";
+  private static final String PROCEDURE_READ_BY_MOVIE_FK = "{ CALL [dbo].[GenreReadByMovieFK] (?) }";
 
   @Override
   protected String getModelName() {
@@ -73,6 +78,26 @@ public final class SqlGenreTableModelRepository
       statement.execute();
 
       return statement.getInt(1);
+    }
+  }
+
+  @Override
+  public Collection<GenreTableModel> readByMovieFK(int movieFK)
+    throws Exception {
+    DataSource dataSource = this.getDataSource();
+    try ( Connection connection = dataSource.getConnection();
+          CallableStatement statement = connection.prepareCall(
+                              PROCEDURE_READ_BY_MOVIE_FK)) {
+
+      statement.setInt(PARAMETER_MOVIE_FK, movieFK);
+
+      Collection<GenreTableModel> collection = new ArrayList<>();
+      try ( ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next())
+          collection.add(this.model(resultSet));
+
+        return collection;
+      }
     }
   }
 

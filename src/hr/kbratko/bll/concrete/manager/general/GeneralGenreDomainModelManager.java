@@ -10,6 +10,7 @@ import hr.kbratko.bll.concrete.model.GenreDomainModel;
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.base.repo.model.GenreTableModelRepository;
 import hr.kbratko.dal.concrete.model.GenreTableModel;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -63,6 +64,16 @@ public final class GeneralGenreDomainModelManager
     throws Exception {
     return ((GenreTableModelRepository) this.getRepository()).deleteAll(
       deletedBy);
+  }
+
+  @Override
+  public Collection<GenreDomainModel> getByMovieFK(int movieFK)
+    throws Exception {
+    return ((GenreTableModelRepository) this.getRepository())
+      .readByMovieFK(movieFK)
+      .stream()
+      .map(this::toDomainModel)
+      .toList();
   }
 
 }

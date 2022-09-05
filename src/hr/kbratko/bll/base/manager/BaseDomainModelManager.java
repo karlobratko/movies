@@ -82,15 +82,21 @@ public abstract class BaseDomainModelManager<TKey, TTableModel extends TableMode
   @Override
   public Collection<TDomainModel> getAll()
     throws Exception {
-    return this.getRepository().readAll().stream().map(this::toDomainModel)
+    return this.getRepository()
+      .readAll()
+      .stream()
+      .map(this::toDomainModel)
       .toList();
   }
 
   @Override
   public Collection<TDomainModel> getAllIfAvailable()
     throws Exception {
-    return this.getRepository().readAllAvailable().stream().map(
-      this::toDomainModel).toList();
+    return this.getRepository()
+      .readAllAvailable()
+      .stream()
+      .map(this::toDomainModel)
+      .toList();
   }
 
   @Override
@@ -104,7 +110,8 @@ public abstract class BaseDomainModelManager<TKey, TTableModel extends TableMode
   @Override
   public Optional<TDomainModel> getByIdIfAvailable(TKey id)
     throws Exception {
-    Optional<TTableModel> tableModel = this.getRepository().readByIdAvailable(id);
+    Optional<TTableModel> tableModel = this.getRepository()
+                          .readByIdAvailable(id);
 
     return tableModel.map(this::toDomainModel);
   }

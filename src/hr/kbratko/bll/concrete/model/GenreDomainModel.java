@@ -53,7 +53,7 @@ public final class GenreDomainModel
 
   @Override
   public String toString() {
-    return String.format("%d, %s", this._id, this._name);
+    return this._name;
   }
 
 }

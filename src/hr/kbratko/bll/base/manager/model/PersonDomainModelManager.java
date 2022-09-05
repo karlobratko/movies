@@ -7,6 +7,7 @@ package hr.kbratko.bll.base.manager.model;
 import hr.kbratko.bll.base.manager.DomainModelManager;
 import hr.kbratko.bll.concrete.model.PersonDomainModel;
 import hr.kbratko.dal.concrete.model.PersonTableModel;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -20,6 +21,12 @@ public interface PersonDomainModelManager
     throws Exception;
 
   int removeAll(Optional<Integer> deletedBy)
+    throws Exception;
+
+  Collection<PersonDomainModel> getActorsByMovieFK(int movieFK)
+    throws Exception;
+
+  Collection<PersonDomainModel> getDirectorsByMovieFK(int movieFK)
     throws Exception;
 
 }

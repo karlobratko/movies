@@ -6,6 +6,7 @@ package hr.kbratko.dal.base.repo.model;
 
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.concrete.model.GenreTableModel;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,9 @@ public interface GenreTableModelRepository
     throws Exception;
 
   int deleteAll(Optional<Integer> deletedBy)
+    throws Exception;
+
+  Collection<GenreTableModel> readByMovieFK(int movieFK)
     throws Exception;
 
 }
