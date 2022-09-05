@@ -6,6 +6,7 @@ package hr.kbratko.dal.base.repo.model;
 
 import hr.kbratko.dal.base.repo.TableModelRepository;
 import hr.kbratko.dal.concrete.model.PersonTableModel;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,12 @@ public interface PersonTableModelRepository
     throws Exception;
 
   int deleteAll(Optional<Integer> deletedBy)
+    throws Exception;
+
+  Collection<PersonTableModel> readActorsByMovieFK(int movieFK)
+    throws Exception;
+
+  Collection<PersonTableModel> readDirectorsByMovieFK(int movieFK)
     throws Exception;
 
 }
