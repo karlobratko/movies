@@ -1478,6 +1478,68 @@ END
 GO
 
 /****************************************************
+name = [dbo].[PersonReadDirectorsByMovieFK]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @MovieFK (int identifier of MOVIE)
+
+return_value = () | PERSON | PERSON_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonReadDirectorsByMovieFK] ( @MovieFK AS int )
+AS BEGIN
+  SELECT ALL
+      [People].[Id]
+    , [People].[Guid]
+    , [People].[CreateDate]
+    , [People].[CreatedBy]
+    , [People].[UpdateDate]
+    , [People].[UpdatedBy]
+    , [People].[DeleteDate]
+    , [People].[DeletedBy]
+    , [FName]
+    , [LName]
+  FROM [dbo].[People]
+  INNER JOIN [dbo].[Directors]
+    ON [PersonFK] = [People].[Id]
+  WHERE [MovieFK] = @MovieFK
+    AND [People].[DeleteDate] IS NULL
+END
+GO
+
+/****************************************************
+name = [dbo].[PersonReadActorsByMovieFK]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @MovieFK (int identifier of MOVIE)
+
+return_value = () | PERSON | PERSON_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[PersonReadActorsByMovieFK] ( @MovieFK AS int )
+AS BEGIN
+  SELECT ALL
+      [People].[Id]
+    , [People].[Guid]
+    , [People].[CreateDate]
+    , [People].[CreatedBy]
+    , [People].[UpdateDate]
+    , [People].[UpdatedBy]
+    , [People].[DeleteDate]
+    , [People].[DeletedBy]
+    , [FName]
+    , [LName]
+  FROM [dbo].[People]
+  INNER JOIN [dbo].[Actors]
+    ON [PersonFK] = [People].[Id]
+  WHERE [MovieFK] = @MovieFK
+    AND [People].[DeleteDate] IS NULL
+END
+GO
+
+/****************************************************
 name = [dbo].[Directors]
 db_type = TABLE
 identifiable = 1
@@ -2639,6 +2701,36 @@ AS BEGIN
   WHERE [DeleteDate] IS NULL
 
   RETURN @@ROWCOUNT
+END
+GO
+
+/****************************************************
+name = [dbo].[GenreReadByMovieFK]
+db_type = STORED PROCEDURE
+sp_type = READ
+
+params = @MovieFK (int identifier of MOVIE)
+
+return_value = () | GENRE | GENRE_SET
+return_code = VOID
+****************************************************/
+CREATE OR ALTER PROCEDURE [dbo].[GenreReadByMovieFK] ( @MovieFK AS int )
+AS BEGIN
+  SELECT ALL
+      [Genres].[Id]
+    , [Genres].[Guid]
+    , [Genres].[CreateDate]
+    , [Genres].[CreatedBy]
+    , [Genres].[UpdateDate]
+    , [Genres].[UpdatedBy]
+    , [Genres].[DeleteDate]
+    , [Genres].[DeletedBy]
+    , [Name]
+  FROM [dbo].[Genres]
+  INNER JOIN [dbo].[MoviesGenres]
+    ON [GenreFK] = [Genres].[Id]
+  WHERE [MovieFK] = @MovieFK
+    AND [Genres].[DeleteDate] IS NULL
 END
 GO
 
